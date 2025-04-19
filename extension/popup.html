@@ -38,6 +38,7 @@
       height: 10px;
       border-radius: 50%;
       margin-right: 10px;
+      flex-shrink: 0;
     }
     
     .status-text {
@@ -208,6 +209,26 @@
       display: flex;
       align-items: center;
     }
+
+    .social-link i.fa-linkedin {
+      color: #0A66C2;
+    }
+    
+    .social-link i.fa-github {
+      color: #171515;
+    }
+    
+    .social-link i.fa-link {
+      color: #39E09B;
+    }
+    
+    .fa-google {
+      background: conic-gradient(from -45deg, #ea4335 110deg, #4285f4 90deg 180deg, #34a853 180deg 270deg, #fbbc05 270deg) 73% 55%/150% 150% no-repeat;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+    }
   </style>
 </head>
 <body>
@@ -284,7 +305,7 @@
   </div>
   
   <div class="footer">
-    <p>Powered by Google Gemini API</p>
+    <p>Powered by <i class="fab fa-google"></i> Gemini API</p>
   </div>
   
   <script src="gemini-api.js"></script>
