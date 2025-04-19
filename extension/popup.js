@@ -26,6 +26,17 @@ document.addEventListener('DOMContentLoaded', function() {
     aboutContent.classList.add('active');
     settingsContent.classList.remove('active');
   });
+  
+  const emailLink = document.getElementById('email-link');
+  if (emailLink) {
+    emailLink.addEventListener('click', function(e) {
+      e.preventDefault();
+      console.log("Sending email...");
+      chrome.tabs.create({
+        url: "mailto:utkarshprap@gmail.com"
+      });
+    });
+  }
 });
 
 function checkApiConfig() {
