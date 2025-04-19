@@ -5,127 +5,228 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LeetCode Helper</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --primary-color: #2cbb5d;
+      --primary-dark: #28a955;
+      --primary-light: #61D095;
+      --accent-color: #f1c40f;
+      --dark-bg: #1E1E1E;
+      --dark-surface: #2D2D2D;
+      --dark-card: #383838;
+      --dark-border: #454545;
+      --light-text: #E0E0E0;
+      --medium-text: #BBBBBB;
+      --disabled-text: #898989;
+      --error-color: #e74c3c;
+      --shadow-color: rgba(0, 0, 0, 0.5);
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
     body {
-      width: 300px;
-      padding: 15px;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      width: 340px;
+      font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      background-color: var(--dark-bg);
+      color: var(--light-text);
+      padding: 16px;
+      line-height: 1.5;
+    }
+    
+    h2, h3, h4 {
+      color: var(--light-text);
+      font-weight: 500;
+      margin-bottom: 8px;
     }
     
     h2 {
-      color: #2cbb5d;
-      margin-top: 0;
-      font-size: 18px;
+      font-size: 20px;
+    }
+    
+    h3 {
+      font-size: 16px;
     }
     
     p {
       font-size: 14px;
-      line-height: 1.5;
-      color: #333;
+      margin-bottom: 16px;
+      color: var(--medium-text);
     }
     
     .status {
       display: flex;
       align-items: center;
-      margin: 15px 0;
-      padding: 10px;
-      background-color: #f8f9fa;
-      border-radius: 4px;
+      margin: 16px 0;
+      padding: 12px;
+      background-color: var(--dark-surface);
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
     }
     
     .status-icon {
-      width: 10px;
-      height: 10px;
+      width: 12px;
+      height: 12px;
       border-radius: 50%;
-      margin-right: 10px;
+      margin-right: 12px;
       flex-shrink: 0;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
     
     .status-text {
       font-size: 14px;
-      font-weight: 500;
+      font-weight: 400;
+      color: var(--light-text);
     }
     
     .connected {
-      background-color: #2cbb5d;
+      background-color: var(--primary-color);
+      box-shadow: 0 0 8px var(--primary-color);
     }
     
     .disconnected {
-      background-color: #dc3545;
+      background-color: var(--error-color);
+      box-shadow: 0 0 8px var(--error-color);
     }
     
-    button {
+    .btn {
+      display: inline-block;
       width: 100%;
-      padding: 8px 0;
-      background-color: #2cbb5d;
+      padding: 10px 16px;
+      background-color: var(--primary-color);
       color: white;
       border: none;
       border-radius: 4px;
       font-size: 14px;
-      font-weight: 600;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
       cursor: pointer;
-      transition: background-color 0.2s;
+      transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      outline: none;
+      position: relative;
+      overflow: hidden;
     }
     
-    button:hover {
-      background-color: #28a955;
+    .btn:hover {
+      background-color: var(--primary-dark);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+    
+    .btn:active {
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+      transform: translateY(1px);
+    }
+    
+    .btn::after {
+      content: '';
+      display: block;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      background-image: radial-gradient(circle, #fff 10%, transparent 10.01%);
+      background-repeat: no-repeat;
+      background-position: 50%;
+      transform: scale(10, 10);
+      opacity: 0;
+      transition: transform .5s, opacity 1s;
+    }
+    
+    .btn:active::after {
+      transform: scale(0, 0);
+      opacity: 0.3;
+      transition: 0s;
     }
     
     .footer {
-      margin-top: 15px;
+      margin-top: 16px;
       font-size: 12px;
-      color: #6c757d;
+      color: var(--disabled-text);
       text-align: center;
+      padding: 8px;
+      border-top: 1px solid var(--dark-border);
     }
 
-    .api-key-section {
-      margin-top: 15px;
-      padding: 15px;
-      background-color: #f8f9fa;
-      border-radius: 4px;
+    .card {
+      margin-top: 16px;
+      padding: 16px;
+      background-color: var(--dark-card);
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
     }
 
     .form-group {
-      margin-bottom: 15px;
+      margin-bottom: 16px;
     }
 
     label {
       display: block;
-      margin-bottom: 5px;
+      margin-bottom: 8px;
       font-size: 14px;
       font-weight: 500;
+      color: var(--medium-text);
     }
 
     input[type="text"] {
       width: 100%;
-      padding: 8px;
-      border: 1px solid #ddd;
+      padding: 10px 12px;
+      background-color: var(--dark-surface);
+      border: 1px solid var(--dark-border);
       border-radius: 4px;
       font-size: 14px;
-      box-sizing: border-box;
+      color: var(--light-text);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    input[type="text"]:focus {
+      border-color: var(--primary-color);
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(44, 187, 93, 0.25);
     }
 
     .tabs {
       display: flex;
-      margin-bottom: 15px;
-      border-bottom: 1px solid #ddd;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--dark-border);
     }
 
     .tab {
-      padding: 10px 15px;
+      padding: 12px 16px;
       cursor: pointer;
       font-size: 14px;
       font-weight: 500;
       background-color: transparent;
       border: none;
-      color: #6c757d;
-      transition: color 0.2s;
+      color: var(--medium-text);
+      transition: all 0.2s ease;
+      position: relative;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     .tab.active {
-      color: #2cbb5d;
-      font-weight: 600;
-      border-bottom: 2px solid #2cbb5d;
+      color: var(--primary-color);
+      font-weight: 500;
+    }
+    
+    .tab.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background-color: var(--primary-color);
     }
 
     .tab-content {
@@ -134,19 +235,18 @@
 
     .tab-content.active {
       display: block;
+      animation: fadeIn 0.3s ease;
     }
-
-    .about-section {
-      margin-top: 15px;
-      padding: 15px;
-      background-color: #f8f9fa;
-      border-radius: 4px;
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .profile-info {
       display: flex;
       align-items: center;
-      margin-bottom: 15px;
+      margin-bottom: 16px;
     }
     
     .profile-img {
@@ -162,61 +262,64 @@
     }
 
     .profile-pic {
-      width: 60px;
-      height: 60px;
+      width: 64px;
+      height: 64px;
       border-radius: 50%;
-      background-color: #2cbb5d;
+      background-color: var(--primary-color);
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-right: 15px;
+      margin-right: 16px;
       font-size: 24px;
       color: white;
       overflow: hidden;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
     }
 
     .social-links {
       display: flex;
       flex-wrap: nowrap;
       justify-content: space-between;
-      gap: 5px;
-      margin: 15px 0;
+      gap: 8px;
+      margin: 16px 0;
     }
 
     .social-link {
       display: inline-flex;
       align-items: center;
-      padding: 5px 8px;
-      background-color: #e9ecef;
-      border-radius: 4px;
-      font-size: 12px;
-      color: #333;
-      text-decoration: none;
-      transition: background-color 0.2s;
-      flex: 1;
       justify-content: center;
+      padding: 8px 12px;
+      background-color: var(--dark-surface);
+      border-radius: 4px;
+      font-size: 13px;
+      color: var(--light-text);
+      text-decoration: none;
+      transition: all 0.2s ease;
+      flex: 1;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
 
     .social-link:hover {
-      background-color: #dee2e6;
+      background-color: var(--dark-card);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      transform: translateY(-2px);
     }
 
     .social-link i {
-      margin-right: 5px;
+      margin-right: 6px;
       font-size: 16px;
     }
 
     .logo {
       display: flex;
       align-items: center;
-      margin-bottom: 15px;
+      margin-bottom: 16px;
     }
 
     .logo i {
       font-size: 24px;
-      margin-right: 10px;
-      color: #2cbb5d;
+      margin-right: 12px;
+      color: var(--primary-color);
       display: flex;
       align-items: center;
     }
@@ -232,7 +335,7 @@
     }
     
     .social-link i.fa-github {
-      color: #171515;
+      color: #f0f6fc;
     }
     
     .social-link i.fa-link {
@@ -245,6 +348,36 @@
       background-clip: text;
       color: transparent;
       -webkit-text-fill-color: transparent;
+    }
+    
+    .email-link {
+      display: inline-flex;
+      align-items: center;
+      font-size: 13px;
+      color: var(--primary-color);
+      text-decoration: none;
+      transition: color 0.2s ease;
+      margin-top: 4px;
+    }
+    
+    .email-link:hover {
+      color: var(--primary-light);
+    }
+    
+    .email-link i {
+      margin-right: 6px;
+    }
+    
+    .version-info {
+      margin-top: 16px;
+      font-size: 12px;
+      color: var(--disabled-text);
+    }
+    
+    .divider {
+      height: 1px;
+      background-color: var(--dark-border);
+      margin: 16px 0;
     }
   </style>
 </head>
@@ -267,35 +400,35 @@
       <div id="status-text" class="status-text">Checking API configuration...</div>
     </div>
     
-    <button id="check-connection">Check Connection</button>
+    <button id="check-connection" class="btn">Check Connection</button>
     
-    <div id="api-key-section" class="api-key-section">
+    <div class="card">
       <h3>API Key Configuration</h3>
       <p id="api-key-instruction">Enter your Gemini API key to enable the extension:</p>
       <p id="change-key-instruction" style="display: none;">Your API key is configured. You can change it below if needed:</p>
       <form id="api-key-form">
         <div class="form-group">
-          <label for="api-key-input">Gemini API Key: <span id="change-key-label" style="color: #2cbb5d; font-size: 12px; display: none;">(Change Key)</span></label>
+          <label for="api-key-input">Gemini API Key <span id="change-key-label" style="color: var(--primary-color); font-size: 12px; display: none;">(Change Key)</span></label>
           <input type="text" id="api-key-input" placeholder="Enter your API key here">
         </div>
-        <button type="submit">Save API Key</button>
+        <button type="submit" class="btn">Save API Key</button>
       </form>
     </div>
   </div>
   
   <div id="about-content" class="tab-content">
-    <div class="about-section">
+    <div class="card">
       <div class="profile-info">
         <div class="profile-pic">
           <img src="images/profile.png" alt="Utkarsh Prajapati" class="profile-img">
         </div>
         <div>
-          <h3 style="margin: 0 0 5px 0;">Utkarsh Prajapati</h3>
+          <h3>Utkarsh Prajapati</h3>
           <p style="margin: 0; font-size: 13px;">Computer Science Student & Developer</p>
         </div>
       </div>
       
-      <p style="font-size: 13px;">LeetCode Helper is a Chrome extension that uses Gemini AI to provide personalized hints for solving coding problems.</p>
+      <p>LeetCode Helper is a Chrome extension that uses Gemini AI to provide personalized hints for solving coding problems.</p>
       
       <div class="social-links">
         <a href="https://linkedin.com/in/utkarshprap" target="_blank" class="social-link">
@@ -309,20 +442,22 @@
         </a>
       </div>
       
-      <p style="font-size: 13px; margin-bottom: 5px;">Contact:</p>
-      <a id="email-link" href="#" style="font-size: 13px; color: #2cbb5d; text-decoration: none; display: inline-block; cursor: pointer;">
+      <div class="divider"></div>
+      
+      <p style="margin-bottom: 4px;">Contact:</p>
+      <a id="email-link" href="#" class="email-link">
         <i class="fas fa-envelope"></i> utkarshprap@gmail.com
       </a>
       
-      <div style="margin-top: 15px; font-size: 12px; color: #6c757d;">
+      <div class="version-info">
         <p style="margin: 0;">Version: 1.0</p>
-        <p style="margin: 5px 0 0 0;">© 2025 Utkarsh Prajapati. All rights reserved.</p>
+        <p style="margin: 4px 0 0 0;">© 2025 Utkarsh Prajapati. All rights reserved.</p>
       </div>
     </div>
   </div>
   
   <div class="footer">
-    <p>Powered by <i class="fab fa-google"></i> Gemini API</p>
+    <p style="margin: 0;">Powered by <i class="fab fa-google"></i> Gemini API</p>
   </div>
   
   <script src="gemini-api.js"></script>
