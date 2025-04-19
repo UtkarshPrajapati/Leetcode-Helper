@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LeetCode Helper</title>
+  <style>
+    body {
+      width: 300px;
+      padding: 15px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+    
+    h2 {
+      color: #2cbb5d;
+      margin-top: 0;
+      font-size: 18px;
+    }
+    
+    p {
+      font-size: 14px;
+      line-height: 1.5;
+      color: #333;
+    }
+    
+    .status {
+      display: flex;
+      align-items: center;
+      margin: 15px 0;
+      padding: 10px;
+      background-color: #f8f9fa;
+      border-radius: 4px;
+    }
+    
+    .status-icon {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+    
+    .status-text {
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    .connected {
+      background-color: #2cbb5d;
+    }
+    
+    .disconnected {
+      background-color: #dc3545;
+    }
+    
+    button {
+      width: 100%;
+      padding: 8px 0;
+      background-color: #2cbb5d;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    
+    button:hover {
+      background-color: #28a955;
+    }
+    
+    .footer {
+      margin-top: 15px;
+      font-size: 12px;
+      color: #6c757d;
+      text-align: center;
+    }
+
+    .api-key-section {
+      margin-top: 15px;
+      padding: 15px;
+      background-color: #f8f9fa;
+      border-radius: 4px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+  </style>
+</head>
+<body>
+  <h2>LeetCode Helper</h2>
+  <p>Get personalized hints on your LeetCode problems using Gemini AI.</p>
+  
+  <div class="status">
+    <div id="status-icon" class="status-icon disconnected"></div>
+    <div id="status-text" class="status-text">Checking API configuration...</div>
+  </div>
+  
+  <button id="check-connection">Check Connection</button>
+  
+  <div id="api-key-section" class="api-key-section">
+    <h3>API Key Configuration</h3>
+    <p id="api-key-instruction">Enter your Gemini API key to enable the extension:</p>
+    <p id="change-key-instruction" style="display: none;">Your API key is configured. You can change it below if needed:</p>
+    <form id="api-key-form">
+      <div class="form-group">
+        <label for="api-key-input">Gemini API Key: <span id="change-key-label" style="color: #2cbb5d; font-size: 12px; display: none;">(Change Key)</span></label>
+        <input type="text" id="api-key-input" placeholder="Enter your API key here">
+      </div>
+      <button type="submit">Save API Key</button>
+    </form>
+  </div>
+  
+  <div class="footer">
+    <p>Powered by Google Gemini API</p>
+  </div>
+  
+  <script src="gemini-api.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html> 

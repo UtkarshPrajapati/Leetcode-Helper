@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "LeetCode Helper",
+  "version": "1.0",
+  "description": "Get personalized hints on LeetCode problems using Gemini AI",
+  "permissions": ["activeTab", "storage"],
+  "host_permissions": ["https://generativelanguage.googleapis.com/*"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "images/icon16.png"
+    }
+  },
+  "icons": {
+    "16": "images/icon16.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://leetcode.com/problems/*"],
+      "js": ["gemini-api.js", "content.js"],
+      "css": ["overlay.css"]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["monaco-extractor.js"],
+      "matches": ["https://leetcode.com/*"]
+    }
+  ]
+} 
