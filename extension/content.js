@@ -45,7 +45,6 @@ function createOverlay() {
   overlay.id = 'leetcode-helper-overlay';
   overlay.className = 'leetcode-helper-overlay';
   
-  // Add Font Awesome stylesheet
   if (!document.querySelector('link[href*="font-awesome"]')) {
     const faLink = document.createElement('link');
     faLink.rel = 'stylesheet';
