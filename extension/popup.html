@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LeetCode Helper</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     body {
       width: 300px;
@@ -151,13 +152,13 @@
       width: 60px;
       height: 60px;
       border-radius: 50%;
-      background-color: #e9ecef;
+      background-color: #2cbb5d;
       display: flex;
       align-items: center;
       justify-content: center;
       margin-right: 15px;
       font-size: 24px;
-      color: #6c757d;
+      color: white;
     }
 
     .social-links {
@@ -187,10 +188,25 @@
       margin-right: 5px;
       font-size: 16px;
     }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .logo i {
+      font-size: 24px;
+      margin-right: 10px;
+      color: #2cbb5d;
+    }
   </style>
 </head>
 <body>
-  <h2>LeetCode Helper</h2>
+  <div class="logo">
+    <i class="fa-solid fa-puzzle-piece"></i>
+    <h2>LeetCode Helper</h2>
+  </div>
   
   <div class="tabs">
     <button id="settings-tab" class="tab active">Settings</button>
@@ -224,7 +240,9 @@
   <div id="about-content" class="tab-content">
     <div class="about-section">
       <div class="profile-info">
-        <div class="profile-pic">UP</div>
+        <div class="profile-pic">
+          <i class="fa-solid fa-user"></i>
+        </div>
         <div>
           <h3 style="margin: 0 0 5px 0;">Utkarsh Prajapati</h3>
           <p style="margin: 0; font-size: 13px;">Computer Science Student & Developer</p>
@@ -235,19 +253,19 @@
       
       <div class="social-links">
         <a href="https://linkedin.com/in/utkarshprap" target="_blank" class="social-link">
-          <i>🔗</i> LinkedIn
+          <i class="fab fa-linkedin"></i> LinkedIn
         </a>
         <a href="https://github.com/UtkarshPrajapati" target="_blank" class="social-link">
-          <i>🔍</i> GitHub
+          <i class="fab fa-github"></i> GitHub
         </a>
         <a href="https://linktr.ee/ut_op" target="_blank" class="social-link">
-          <i>🌐</i> LinkTree
+          <i class="fas fa-link"></i> LinkTree
         </a>
       </div>
       
       <p style="font-size: 13px; margin-bottom: 5px;">Contact:</p>
       <a href="mailto:utkarshprap@gmail.com" style="font-size: 13px; color: #2cbb5d; text-decoration: none;">
-        utkarshprap@gmail.com
+        <i class="fas fa-envelope"></i> utkarshprap@gmail.com
       </a>
       
       <div style="margin-top: 15px; font-size: 12px; color: #6c757d;">

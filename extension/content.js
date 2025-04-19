@@ -44,15 +44,29 @@ function createOverlay() {
   overlay = document.createElement('div');
   overlay.id = 'leetcode-helper-overlay';
   overlay.className = 'leetcode-helper-overlay';
+  
+  // Add Font Awesome stylesheet
+  if (!document.querySelector('link[href*="font-awesome"]')) {
+    const faLink = document.createElement('link');
+    faLink.rel = 'stylesheet';
+    faLink.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css';
+    document.head.appendChild(faLink);
+  }
+  
   overlay.innerHTML = `
     <div class="leetcode-helper-header">
-      <h3>LeetCode Helper</h3>
-      <button id="leetcode-helper-toggle" class="leetcode-helper-button">_</button>
+      <div style="display: flex; align-items: center;">
+        <i class="fa-solid fa-puzzle-piece" style="margin-right: 8px;"></i>
+        <h3>LeetCode Helper</h3>
+      </div>
+      <button id="leetcode-helper-toggle" class="leetcode-helper-button"><i class="fa-solid fa-minus"></i></button>
     </div>
     <div class="leetcode-helper-content" id="leetcode-helper-content">
-      <p>Need help with your solution? Click the button below to get a hint!</p>
+      <p><i class="fa-solid fa-lightbulb" style="color: #f1c40f; margin-right: 5px;"></i> Need help with your solution? Click the button below to get a hint!</p>
       <div style="margin-top: 15px;"></div>
-      <button id="leetcode-helper-get-hint" class="leetcode-helper-button leetcode-helper-primary">Get Hint</button>
+      <button id="leetcode-helper-get-hint" class="leetcode-helper-button leetcode-helper-primary">
+        <i class="fa-solid fa-wand-magic-sparkles"></i> Get Hint
+      </button>
       <div id="leetcode-helper-hint-container" class="leetcode-helper-hint-container" style="display: none;">
         <div id="leetcode-helper-hint"></div>
         <div id="leetcode-helper-bugs"></div>
@@ -74,10 +88,10 @@ function toggleOverlay() {
   
   if (content.style.display === 'none') {
     content.style.display = 'block';
-    toggle.textContent = '_';
+    toggle.innerHTML = '<i class="fa-solid fa-minus"></i>';
   } else {
     content.style.display = 'none';
-    toggle.textContent = '+';
+    toggle.innerHTML = '<i class="fa-solid fa-plus"></i>';
   }
 }
 
