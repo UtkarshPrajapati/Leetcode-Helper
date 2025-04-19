@@ -1,75 +1,132 @@
-# Testing Guide for LeetCode Helper
+# 🧪 Testing Guide for LeetCode Helper
 
-This document provides guidance on how to test the LeetCode Helper extension during development.
+This document provides guidance on how to test the LeetCode Helper extension during development. 🚀
 
-## Prerequisites
+## 📋 Prerequisites
 
 Before testing, ensure that:
 
-1. You have set up the backend correctly with your Gemini API key in the `.env` file
+1. You have a valid Gemini API key from [Google AI Studio](https://aistudio.google.com/apikey)
 2. You have installed the extension in Chrome developer mode
-3. The FastAPI backend is running (via `uvicorn` or the `start_backend.bat` file)
+3. You have configured the API key in the extension settings
 
-## Testing the Backend
+## 🔍 Manual Testing Steps
 
-1. Start the FastAPI backend:
+### 1. Testing Extension Installation and Configuration
+
+1. **Install the Extension in Developer Mode** 📦
    ```
-   cd backend
-   uvicorn main:app --reload
+   - Open Chrome and navigate to chrome://extensions/
+   - Enable "Developer mode" in the top-right corner
+   - Click "Load unpacked" and select the `extension` folder
    ```
 
-2. Open your browser and navigate to: `http://localhost:8000/`
-   - You should see a JSON response: `{"message": "LeetCode Helper API is running"}`
-
-3. Test the API endpoint manually using a tool like curl, Postman, or a simple fetch from the browser console:
+2. **Configure the Gemini API Key** 🔑
    ```
-   curl -X POST http://localhost:8000/get_hint \
-     -H "Content-Type: application/json" \
-     -d '{"code": "def twoSum(nums, target):\n    # TODO: Implement this\n    pass", "problem_title": "Two Sum", "problem_description": "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target."}'
+   - Click on the LeetCode Helper extension icon in the toolbar
+   - Enter your Gemini API key in the form
+   - Click "Save API Key"
+   - The status should change to "Gemini API configured" with a green indicator
    ```
-   - This should return a JSON response with hints from the Gemini API
 
-## Testing the Chrome Extension
+### 2. Testing the Extension on LeetCode
 
-1. Ensure the backend is running
+1. **Navigate to a LeetCode Problem** 🧩
+   ```
+   - Go to https://leetcode.com/problems/two-sum/ (or any other problem)
+   - The LeetCode Helper overlay should appear in the bottom right corner
+   ```
 
-2. Open the Chrome Extensions page (`chrome://extensions/`) 
-   - Ensure "Developer mode" is enabled
-   - Click "Load unpacked" and select the `extension` directory if not already loaded
-   - If you've made changes to the extension files, click the refresh icon on the extension card
+2. **Test Code Extraction** 💻
+   ```
+   - Write some code in the LeetCode editor
+   - Click "Get Hint" in the LeetCode Helper overlay
+   - Check the browser console (F12) to see if the code was extracted correctly
+   ```
 
-3. Click on the extension icon in the Chrome toolbar
-   - The popup should display and show "Connected to backend" if the backend is running
-   - If not, it should show "Cannot connect to backend"
+3. **Test Hint Generation** 💡
+   ```
+   - After clicking "Get Hint", the overlay should show a loading spinner
+   - After a few seconds, it should display personalized hints
+   - Verify that the hints are relevant to your code and the problem
+   ```
 
-4. Navigate to a LeetCode problem (e.g., `https://leetcode.com/problems/two-sum/`)
+## 🔧 Testing Different Scenarios
 
-5. Check if the LeetCode Helper overlay appears in the bottom right corner of the page
+### Test Case 1: Correct Solution
 
-6. Write some incomplete code in the LeetCode editor (e.g., just the function signature)
+1. Write a fully correct solution to a problem
+2. Click "Get Hint"
+3. The extension should recognize that the solution is correct and suggest optimizations
 
-7. Click the "Get Hint" button in the overlay
-   - The overlay should show a loading indicator
-   - After a few seconds, you should receive a hint about how to solve the problem
+### Test Case 2: Solution with Bugs
 
-## Common Issues and Debugging
+1. Write a solution with intentional bugs or edge case issues
+2. Click "Get Hint"
+3. The extension should identify the bugs and provide guidance on fixing them
 
-### Backend Issues
+### Test Case 3: Partial Solution
 
-- **Error when starting the backend**: Make sure all dependencies are installed and the virtual environment is activated
-- **"GEMINI_API_KEY environment variable not set"**: Make sure you have created a `.env` file with your API key
-- **API call errors**: Check the terminal where the backend is running for detailed error messages
+1. Write only a partial solution or function signature
+2. Click "Get Hint"
+3. The extension should provide guidance on how to approach the problem
 
-### Extension Issues
+## 🐞 Troubleshooting Common Issues
 
-- **Extension not showing up on LeetCode**: Make sure the content scripts match pattern includes the LeetCode URL you're visiting
-- **Cannot extract code**: Open the browser console (F12) and check for error messages
-- **No connection to backend**: Make sure the backend is running and check for CORS issues in the browser console
-- **Overlay not showing**: Manually inspect the DOM to see if the overlay element is being created and check for CSS/styling issues
+### API Key Issues
 
-## Debugging Tips
+- **"Gemini API key not configured"** ❌
+  - Ensure you've entered a valid API key in the extension popup
+  - Check that the API key is validated correctly with Google's API
 
-1. Use `console.log()` statements in `content.js` to debug the extension
-2. Check the browser console (F12) for any JavaScript errors
-3. Use the Network tab in Chrome DevTools to monitor the API requests
-4. Add print statements in `main.py` to debug the backend processing 
+- **"API key validation failed"** ❌
+  - Verify your API key is correct
+  - Make sure you have sufficient quota/credits on your Google AI account
+
+### Extension Functionality Issues
+
+- **Overlay not appearing** 🔍
+  - Refresh the page
+  - Check if the URL matches the pattern in the manifest
+  - Look for errors in the browser console (F12)
+
+- **Cannot extract code** 📝
+  - Check browser console for error messages
+  - Verify if the Monaco editor is fully loaded
+  - Try writing more code in the editor
+
+- **No hints received** 💬
+  - Verify your API key is working
+  - Check network requests in the browser DevTools
+  - Try with a simpler code sample
+
+## 📊 Performance Testing
+
+To test the performance of the extension:
+
+1. **Response Time** ⏱️
+   - Measure the time from clicking "Get Hint" to receiving a response
+   - Should typically be within 2-5 seconds depending on network and AI processing time
+
+2. **UI Responsiveness** 🖱️
+   - The extension UI should remain responsive while waiting for hints
+   - Test if you can minimize the overlay while waiting for a response
+
+## 🛠️ Development Debugging Tips
+
+1. **Use Browser Console** 🖥️
+   - Press F12 to open DevTools
+   - Check the Console tab for errors and logs
+   - Monitor Network requests to see API calls
+
+2. **Test Code Changes** 🔄
+   - After making changes to the extension, refresh it in `chrome://extensions/`
+   - You may need to reload the LeetCode page as well
+
+3. **Inspect DOM Elements** 🔍
+   - Use DevTools to inspect the extension overlay
+   - Check if elements are being created as expected
+
+4. **Manual API Testing** 🧪
+   - You can test the Gemini API directly using tools like Postman
+   - This helps isolate issues between the extension and the API 
