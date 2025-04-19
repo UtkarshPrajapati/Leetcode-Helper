@@ -21,7 +21,19 @@ function extractProblemInfo() {
   const titleElement = document.querySelector('div.text-title-large a[href^="/problems/"]');
   if (titleElement) {
     problemTitle = titleElement.textContent.trim();
+  } else {
+    const url = window.location.href;
+    const problemMatch = url.match(/\/problems\/([^\/]+)/);
+    if (problemMatch && problemMatch[1]) {
+      const rawName = problemMatch[1];
+      problemTitle = rawName
+        .split('-')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+    }
+    console.log("URL Problem Title", problemTitle);
   }
+  
   const descriptionElement = document.querySelector('div.elfjS[data-track-load="description_content"]');
   if (descriptionElement) {
     problemDescription = descriptionElement.textContent.trim();
