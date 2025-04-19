@@ -102,30 +102,159 @@
       font-size: 14px;
       box-sizing: border-box;
     }
+
+    .tabs {
+      display: flex;
+      margin-bottom: 15px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .tab {
+      padding: 10px 15px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      background-color: transparent;
+      border: none;
+      color: #6c757d;
+      transition: color 0.2s;
+    }
+
+    .tab.active {
+      color: #2cbb5d;
+      font-weight: 600;
+      border-bottom: 2px solid #2cbb5d;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .about-section {
+      margin-top: 15px;
+      padding: 15px;
+      background-color: #f8f9fa;
+      border-radius: 4px;
+    }
+
+    .profile-info {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .profile-pic {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background-color: #e9ecef;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 15px;
+      font-size: 24px;
+      color: #6c757d;
+    }
+
+    .social-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 15px 0;
+    }
+
+    .social-link {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 10px;
+      background-color: #e9ecef;
+      border-radius: 4px;
+      font-size: 13px;
+      color: #333;
+      text-decoration: none;
+      transition: background-color 0.2s;
+    }
+
+    .social-link:hover {
+      background-color: #dee2e6;
+    }
+
+    .social-link i {
+      margin-right: 5px;
+      font-size: 16px;
+    }
   </style>
 </head>
 <body>
   <h2>LeetCode Helper</h2>
-  <p>Get personalized hints on your LeetCode problems using Gemini AI.</p>
   
-  <div class="status">
-    <div id="status-icon" class="status-icon disconnected"></div>
-    <div id="status-text" class="status-text">Checking API configuration...</div>
+  <div class="tabs">
+    <button id="settings-tab" class="tab active">Settings</button>
+    <button id="about-tab" class="tab">About</button>
   </div>
   
-  <button id="check-connection">Check Connection</button>
+  <div id="settings-content" class="tab-content active">
+    <p>Get personalized hints on your LeetCode problems using Gemini AI.</p>
+    
+    <div class="status">
+      <div id="status-icon" class="status-icon disconnected"></div>
+      <div id="status-text" class="status-text">Checking API configuration...</div>
+    </div>
+    
+    <button id="check-connection">Check Connection</button>
+    
+    <div id="api-key-section" class="api-key-section">
+      <h3>API Key Configuration</h3>
+      <p id="api-key-instruction">Enter your Gemini API key to enable the extension:</p>
+      <p id="change-key-instruction" style="display: none;">Your API key is configured. You can change it below if needed:</p>
+      <form id="api-key-form">
+        <div class="form-group">
+          <label for="api-key-input">Gemini API Key: <span id="change-key-label" style="color: #2cbb5d; font-size: 12px; display: none;">(Change Key)</span></label>
+          <input type="text" id="api-key-input" placeholder="Enter your API key here">
+        </div>
+        <button type="submit">Save API Key</button>
+      </form>
+    </div>
+  </div>
   
-  <div id="api-key-section" class="api-key-section">
-    <h3>API Key Configuration</h3>
-    <p id="api-key-instruction">Enter your Gemini API key to enable the extension:</p>
-    <p id="change-key-instruction" style="display: none;">Your API key is configured. You can change it below if needed:</p>
-    <form id="api-key-form">
-      <div class="form-group">
-        <label for="api-key-input">Gemini API Key: <span id="change-key-label" style="color: #2cbb5d; font-size: 12px; display: none;">(Change Key)</span></label>
-        <input type="text" id="api-key-input" placeholder="Enter your API key here">
+  <div id="about-content" class="tab-content">
+    <div class="about-section">
+      <div class="profile-info">
+        <div class="profile-pic">UP</div>
+        <div>
+          <h3 style="margin: 0 0 5px 0;">Utkarsh Prajapati</h3>
+          <p style="margin: 0; font-size: 13px;">Computer Science Student & Developer</p>
+        </div>
       </div>
-      <button type="submit">Save API Key</button>
-    </form>
+      
+      <p style="font-size: 13px;">LeetCode Helper is a Chrome extension that uses Gemini AI to provide personalized hints for solving coding problems.</p>
+      
+      <div class="social-links">
+        <a href="https://linkedin.com/in/utkarshprap" target="_blank" class="social-link">
+          <i>🔗</i> LinkedIn
+        </a>
+        <a href="https://github.com/UtkarshPrajapati" target="_blank" class="social-link">
+          <i>🔍</i> GitHub
+        </a>
+        <a href="https://linktr.ee/ut_op" target="_blank" class="social-link">
+          <i>🌐</i> LinkTree
+        </a>
+      </div>
+      
+      <p style="font-size: 13px; margin-bottom: 5px;">Contact:</p>
+      <a href="mailto:utkarshprap@gmail.com" style="font-size: 13px; color: #2cbb5d; text-decoration: none;">
+        utkarshprap@gmail.com
+      </a>
+      
+      <div style="margin-top: 15px; font-size: 12px; color: #6c757d;">
+        <p style="margin: 0;">Version: 1.0</p>
+        <p style="margin: 5px 0 0 0;">© 2025 Utkarsh Prajapati. All rights reserved.</p>
+      </div>
+    </div>
   </div>
   
   <div class="footer">

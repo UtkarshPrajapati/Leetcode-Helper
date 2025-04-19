@@ -7,6 +7,25 @@ document.addEventListener('DOMContentLoaded', function() {
   if (apiKeyForm) {
     apiKeyForm.addEventListener('submit', handleApiKeySubmit);
   }
+
+  const settingsTab = document.getElementById('settings-tab');
+  const aboutTab = document.getElementById('about-tab');
+  const settingsContent = document.getElementById('settings-content');
+  const aboutContent = document.getElementById('about-content');
+  
+  settingsTab.addEventListener('click', function() {
+    settingsTab.classList.add('active');
+    aboutTab.classList.remove('active');
+    settingsContent.classList.add('active');
+    aboutContent.classList.remove('active');
+  });
+  
+  aboutTab.addEventListener('click', function() {
+    aboutTab.classList.add('active');
+    settingsTab.classList.remove('active');
+    aboutContent.classList.add('active');
+    settingsContent.classList.remove('active');
+  });
 });
 
 function checkApiConfig() {
