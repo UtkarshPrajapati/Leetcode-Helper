@@ -14,7 +14,7 @@ A Chrome extension that provides personalized hints for LeetCode problems using 
 ## 🛠️ Setup Instructions
 
 1. **Get a Gemini API Key** 🔑
-   - Visit [Google AI Studio](https://ai.google.dev/) and create an account
+   - Visit [Google AI Studio](https://aistudio.google.com/apikey) and create an account
    - Create a new API key in the Google AI Studio dashboard
    - You'll need this key to configure the extension
 
