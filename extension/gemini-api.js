@@ -97,7 +97,11 @@ async function getHintFromGemini(code, problemTitle, problemDescription) {
     );
 
     if (!response.ok) {
-      throw new Error(`Gemini API error: ${response.status}`);
+      let message = `Network error: Could not connect to the Gemini API. Please check your internet connection. (Status: ${response.status})`;
+      if (response.status === 400) {
+        message = "API key error: The provided API key is invalid or has insufficient quota.";
+      }
+      throw new Error(message);
     }
 
     const result = await response.json();
@@ -114,12 +118,12 @@ async function getHintFromGemini(code, problemTitle, problemDescription) {
         return content.inlineData.json;
       }
     } catch (error) {
-      throw new Error(`Error processing Gemini response: ${error.message}`);
+      throw new Error(`API response error: The Gemini API returned an unexpected response. ${error.message}`);
     }
   } catch (error) {
     console.error("Error calling Gemini API:", error);
     return {
-      hint: `Error getting hint: ${error.message}. Please check your API key and internet connection.`,
+      hint: `Error getting hint: ${error.message}`,
       bugs: "",
       optimization: ""
     };
