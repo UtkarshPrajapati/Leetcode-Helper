@@ -1,3 +1,5 @@
+const GEMINI_API_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-04-17:generateContent';
+
 let GEMINI_API_KEY = "";
 
 function loadApiKey() {
@@ -36,7 +38,7 @@ async function validateApiKey(apiKey) {
 
 async function isApiKeyConfigured() {
   await loadApiKey();
-  return GEMINI_API_KEY && GEMINI_API_KEY.length > 10; // Simple validation
+  return GEMINI_API_KEY !== "";
 }
 
 async function getHintFromGemini(code, problemTitle, problemDescription) {
@@ -67,7 +69,7 @@ async function getHintFromGemini(code, problemTitle, problemDescription) {
 
   try {
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-04-17:generateContent?key=${GEMINI_API_KEY}`,
+      `${GEMINI_API_ENDPOINT}?key=${GEMINI_API_KEY}`,
       {
         method: 'POST',
         headers: {
