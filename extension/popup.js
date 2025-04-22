@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
   try {
     setupEventListeners();
     checkApiConfig();
+    initializeIconState();
   } catch (error) {
     console.error('Error during popup initialization:', error);
     showErrorMessage('Failed to initialize the extension popup. Please try again.');
@@ -96,11 +97,10 @@ function checkApiConfig() {
         }
 
         try {
-          chrome.action.setBadgeText({ text: '•' });
-          chrome.action.setBadgeBackgroundColor({ color: '#2cbb5d' });
-          chrome.action.setBadgeTextColor({ color: '#2cbb5d' });
-        } catch (badgeError) {
-          console.error('Error setting badge:', badgeError);
+          chrome.action.setIcon({ path: { "16": "images/enabled.png" } });
+          chrome.action.setBadgeText({ text: '' });
+        } catch (iconError) {
+          console.error('Error setting icon:', iconError);
         }
         
         if (apiKeyInstruction) apiKeyInstruction.style.display = 'none';
@@ -120,11 +120,10 @@ function checkApiConfig() {
         }
         
         try {
-          chrome.action.setBadgeText({ text: '•' });
-          chrome.action.setBadgeBackgroundColor({ color: '#dc3545' });
-          chrome.action.setBadgeTextColor({ color: '#dc3545' });
-        } catch (badgeError) {
-          console.error('Error setting badge:', badgeError);
+          chrome.action.setIcon({ path: { "16": "images/disabled.png" } });
+          chrome.action.setBadgeText({ text: '' });
+        } catch (iconError) {
+          console.error('Error setting icon:', iconError);
         }
         
         if (apiKeyInstruction) apiKeyInstruction.style.display = 'block';
@@ -197,5 +196,26 @@ function showErrorMessage(message) {
     }
   } catch (error) {
     console.error('Error showing error message:', error);
+  }
+}
+
+// Initialize icon state based on API key configuration
+function initializeIconState() {
+  try {
+    checkApiStatus().then(data => {
+      try {
+        if (data.status === 'ok') {
+          chrome.action.setIcon({ path: { "16": "images/enabled.png" } });
+        } else {
+          chrome.action.setIcon({ path: { "16": "images/disabled.png" } });
+        }
+        // Clear any existing badge
+        chrome.action.setBadgeText({ text: '' });
+      } catch (error) {
+        console.error('Error setting initial icon state:', error);
+      }
+    });
+  } catch (error) {
+    console.error('Error in initializeIconState:', error);
   }
 }

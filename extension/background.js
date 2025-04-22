@@ -1,0 +1,38 @@
+// Initialize extension state when installed or updated
+chrome.runtime.onInstalled.addListener(function(details) {
+  // Check API key status and set the appropriate icon
+  checkApiStatus()
+    .then(data => {
+      if (data.status === 'ok') {
+        chrome.action.setIcon({ path: { "16": "images/enabled.png" } });
+      } else {
+        chrome.action.setIcon({ path: { "16": "images/disabled.png" } });
+      }
+      // Clear any existing badge
+      chrome.action.setBadgeText({ text: '' });
+    })
+    .catch(error => {
+      console.error('Error checking API status on install:', error);
+      // Set disabled icon on error
+      chrome.action.setIcon({ path: { "16": "images/disabled.png" } });
+      chrome.action.setBadgeText({ text: '' });
+    });
+});
+
+// Load the check function from gemini-api.js
+function checkApiStatus() {
+  return new Promise((resolve, reject) => {
+    try {
+      chrome.storage.sync.get('geminiApiKey', function(data) {
+        const apiKey = data.geminiApiKey || "";
+        if (apiKey && apiKey.trim() !== '') {
+          resolve({ status: "ok", message: "Gemini API key is configured" });
+        } else {
+          resolve({ status: "error", message: "Gemini API key not configured" });
+        }
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+} 
