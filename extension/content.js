@@ -116,12 +116,16 @@ function toggleOverlay() {
     const content = document.getElementById('leetcode-helper-content');
     const toggle = document.getElementById('leetcode-helper-toggle');
     
-    if (content.style.display === 'none') {
-      content.style.display = 'block';
-      toggle.innerHTML = '<i class="fa-solid fa-minus"></i>';
+    if (content.classList.contains('collapsed')) {
+      content.classList.remove('collapsed');
+      setTimeout(() => {
+        toggle.innerHTML = '<i class="fa-solid fa-minus"></i>';
+      }, 200);
     } else {
-      content.style.display = 'none';
-      toggle.innerHTML = '<i class="fa-solid fa-plus"></i>';
+      content.classList.add('collapsed');
+      setTimeout(() => {
+        toggle.innerHTML = '<i class="fa-solid fa-plus"></i>';
+      }, 200);
     }
   } catch (error) {
     console.error("Error toggling overlay:", error);
@@ -193,6 +197,11 @@ async function getHint() {
   try {
     document.getElementById('leetcode-helper-loading').style.display = 'flex';
     document.getElementById('leetcode-helper-hint-container').style.display = 'none';
+    
+    // Reset any existing content sections to ensure they're not collapsed
+    document.querySelectorAll('.leetcode-helper-content-section').forEach(section => {
+      section.classList.remove('collapsed');
+    });
   } catch (error) {
     console.error("Error updating overlay display:", error);
     displayErrorMessage("Error: LeetCode's page structure has changed. The extension may not work correctly.");
@@ -270,16 +279,61 @@ function updateHintContainer(data) {
         optimizationElement.innerHTML = '';
         
         if (data.hint) {
-          hintElement.innerHTML = `<h4>Hint:</h4><p>${formatTextWithCodeBlocks(data.hint)}</p>`;
+          hintElement.innerHTML = `
+            <div class="leetcode-helper-section-header" data-target="leetcode-helper-hint-content">
+              <h4>💡 Hint:</h4>
+              <i class="fa-solid fa-chevron-down"></i>
+            </div>
+            <div id="leetcode-helper-hint-content" class="leetcode-helper-content-section">
+              ${formatTextWithCodeBlocks(data.hint)}
+            </div>
+          `;
         }
         
         if (data.bugs) {
-          bugsElement.innerHTML = `<h4>Bugs & Edge Cases:</h4><p>${formatTextWithCodeBlocks(data.bugs)}</p>`;
+          bugsElement.innerHTML = `
+            <div class="leetcode-helper-section-header" data-target="leetcode-helper-bugs-content">
+              <h4>🐞 Bugs & Edge Cases:</h4>
+              <i class="fa-solid fa-chevron-down"></i>
+            </div>
+            <div id="leetcode-helper-bugs-content" class="leetcode-helper-content-section">
+              ${formatTextWithCodeBlocks(data.bugs)}
+            </div>
+          `;
         }
         
         if (data.optimization) {
-          optimizationElement.innerHTML = `<h4>Optimization Tips:</h4><p>${formatTextWithCodeBlocks(data.optimization)}</p>`;
+          optimizationElement.innerHTML = `
+            <div class="leetcode-helper-section-header" data-target="leetcode-helper-optimization-content">
+              <h4>⚡ Optimization Tips:</h4>
+              <i class="fa-solid fa-chevron-down"></i>
+            </div>
+            <div id="leetcode-helper-optimization-content" class="leetcode-helper-content-section">
+              ${formatTextWithCodeBlocks(data.optimization)}
+            </div>
+          `;
         }
+        
+        // Add event listeners for section toggling with the right initial state
+        document.querySelectorAll('.leetcode-helper-section-header').forEach(header => {
+          header.addEventListener('click', function() {
+            const targetId = this.getAttribute('data-target');
+            const section = document.getElementById(targetId);
+            const icon = this.querySelector('i');
+            
+            if (section.classList.contains('collapsed')) {
+              section.classList.remove('collapsed');
+              icon.classList.remove('fa-chevron-right');
+              icon.classList.add('fa-chevron-down');
+            } else {
+              section.classList.add('collapsed');
+              setTimeout(() => {
+                icon.classList.remove('fa-chevron-down');
+                icon.classList.add('fa-chevron-right');
+              }, 150);
+            }
+          });
+        });
     } catch (error) {
         console.error("Error updating hint container elements:", error);
         throw error;
@@ -291,6 +345,16 @@ function formatTextWithCodeBlocks(text) {
     return '';
   }
   
+  // Replace bullet points for better styling
+  text = text.replace(/•\s+/g, '<span class="leetcode-helper-bullet">•</span> ');
+  
+  // Add paragraph breaks for better readability
+  text = text.replace(/\n\n/g, '</p><p>');
+  
+  // Style hint numbers (Hint 1, Hint 2, etc.)
+  text = text.replace(/(Hint \d+:)/g, '<strong>$1</strong>');
+  
+  // Format code blocks
   text = text.replace(/```([\s\S]+?)```/g, function(match, code) {
     const langMatch = code.match(/^(\w+)\s+([\s\S]+)$/);
     if (langMatch) {
@@ -298,6 +362,7 @@ function formatTextWithCodeBlocks(text) {
     }
     return `<pre class="leetcode-helper-code-block"><code>${code}</code></pre>`;
   });
+  
   text = text.replace(/``([\s\S]+?)``/g, function(match, code) {
     const langMatch = code.match(/^(\w+)\s+([\s\S]+)$/);
     if (langMatch) {
@@ -305,5 +370,17 @@ function formatTextWithCodeBlocks(text) {
     }
     return `<pre class="leetcode-helper-code-block"><code>${code}</code></pre>`;
   });
-  return text.replace(/`([^`]+)`/g, '<code class="leetcode-helper-code">$1</code>');
+  
+  // Format inline code
+  text = text.replace(/`([^`]+)`/g, '<code class="leetcode-helper-code">$1</code>');
+  
+  // Wrap in paragraph if not already
+  if (!text.startsWith('<p>')) {
+    text = '<p>' + text;
+  }
+  if (!text.endsWith('</p>')) {
+    text = text + '</p>';
+  }
+  
+  return text;
 } 

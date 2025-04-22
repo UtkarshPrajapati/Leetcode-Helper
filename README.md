@@ -52,7 +52,9 @@ A Chrome extension that provides personalized hints for LeetCode problems using 
 - If the extension isn't appearing on LeetCode, try refreshing the page
 - If you see a blank overlay, wait a few seconds as it might be loading
 - If you're not getting hints, check that your API key is valid and correctly configured
-- For other issues, check the browser console (F12) for error messages
+- If you see an error message when getting a hint, check the browser console (F12) for detailed error information
+- For network-related issues, ensure you have a stable internet connection
+- If the extension appears to hang, refresh the page and try again
 
 ## 📁 Project Structure
 

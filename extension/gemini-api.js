@@ -91,10 +91,18 @@ async function getHintFromGemini(code, problemTitle, problemDescription) {
     \`\`\`
     ${sanitizedCode}
     \`\`\`
-    Format your response as helpful guidance a coding tutor would give with 'bullet points' etc for better visual appeal.
-    Please provide:
-    1. A helpful hint that guides them in the right direction without giving away the full solution. If the code is already correct, then explain that the code is correct and ask them to optimize it.
-    2. If there are any bugs or edge cases they're missing, point them out
+    
+    FORMAT YOUR RESPONSE FOLLOWING THESE STRICT RULES:
+    1. Use bullet points (•) throughout your response for ALL list items
+    2. Number your hints (• Hint 1: ..., • Hint 2: ..., etc.)
+    3. Break paragraphs into short, digestible chunks
+    4. Use clear section headers with emoji prefixes
+    5. If providing code, use proper markdown code blocks
+    6. Keep explanations concise and scannable
+    
+    Provide your response in these exact sections:
+    1. A helpful hint section that guides them in the right direction without giving away the full solution. If the code is already correct, then explain that the code is correct and ask them to optimize it.
+    2. If there are any bugs or edge cases they're missing, point them out clearly as a bulleted list
     3. If the code is fully correct, suggest an optimization and write the optimized code (or just the difference code) if applicable else write "No optimizations needed"
   `;
 
