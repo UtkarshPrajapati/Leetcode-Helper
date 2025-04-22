@@ -6,11 +6,15 @@ setTimeout(initializeExtension, 3000);
 let overlay = null;
 let problemTitle = "N/A";
 let problemDescription = "N/A";
+let hasInitialized = false;
 
 function initializeExtension() {
-  if (document.querySelector('#leetcode-helper-overlay')) {
+  if (hasInitialized || document.querySelector('#leetcode-helper-overlay')) {
     return;
   }
+  
+  hasInitialized = true;
+  
   try {
     extractProblemInfo();
     createOverlay();
@@ -23,29 +27,29 @@ function initializeExtension() {
 }
 
 function extractProblemInfo() {
-  const titleElement = document.querySelector('div.text-title-large a[href^="/problems/"]');
-  if (titleElement) {
-    problemTitle = titleElement.textContent.trim();
-  } else {
-    const url = window.location.href;
-    const problemMatch = url.match(/\/problems\/([^\/]+)/);
-    if (problemMatch && problemMatch[1]) {
-      const rawName = problemMatch[1];
-      problemTitle = rawName
-        .split('-')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ');
-    }
-    console.log("URL Problem Title", problemTitle);
-  }
-
   try {
+    const titleElement = document.querySelector('div.text-title-large a[href^="/problems/"]');
+    if (titleElement) {
+      problemTitle = titleElement.textContent.trim();
+    } else {
+      const url = window.location.href;
+      const problemMatch = url.match(/\/problems\/([^\/]+)/);
+      if (problemMatch && problemMatch[1]) {
+        const rawName = problemMatch[1];
+        problemTitle = rawName
+          .split('-')
+          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' ');
+      }
+      console.log("URL Problem Title", problemTitle);
+    }
+
     const descriptionElement = document.querySelector('div.elfjS[data-track-load="description_content"]');
     if (descriptionElement) {
       problemDescription = descriptionElement.textContent.trim();
     }
   } catch (error) {
-    console.error("Error extracting problem description:", error);
+    console.error("Error extracting problem information:", error);
     displayErrorMessage("Error: LeetCode's page structure has changed. The extension may not work correctly.");
   }
 }
@@ -137,9 +141,16 @@ function injectMonacoExtractor() {
 
 function getLeetCodeCode() {
   return new Promise((resolve) => {
+    const timeout = setTimeout(() => {
+      window.removeEventListener('message', handleMessage);
+      console.warn("Monaco code extraction timed out. Falling back to DOM extraction.");
+      resolve(extractFromDOM());
+    }, 5000);
+    
     const handleMessage = (event) => {
       if (event.source !== window) return;
       if (event.data?.type === 'LEETCODE_CODE_EXTRACTED') {
+        clearTimeout(timeout);
         window.removeEventListener('message', handleMessage);
         if (event.data.code !== null) {
           console.log("Extracted code from Monaco:", event.data.code);
@@ -152,7 +163,7 @@ function getLeetCodeCode() {
     };
     window.addEventListener('message', handleMessage);
     injectMonacoExtractor();
-  })
+  });
 }
 
 function extractFromDOM() {
@@ -188,29 +199,43 @@ async function getHint() {
     return;
   }
 
+  try {
     const code = await getLeetCodeCode();
-  if (code) {
-    try {
-      const data = await getHintFromGemini(code, problemTitle, problemDescription);
-      
-      document.getElementById('leetcode-helper-loading').style.display = 'none';
-      document.getElementById('leetcode-helper-hint-container').style.display = 'block';
+    if (code) {
       try {
-        updateHintContainer(data);
-      } catch (e) {
+        const data = await getHintFromGemini(code, problemTitle, problemDescription);
+        
+        try {
+          document.getElementById('leetcode-helper-loading').style.display = 'none';
+          document.getElementById('leetcode-helper-hint-container').style.display = 'block';
+          updateHintContainer(data);
+        } catch (e) {
           console.error("Error updating hint container", e);
-        document.getElementById('leetcode-helper-hint').innerHTML = "<h4>Error:</h4><p>Error updating the hint display. The extension may not work correctly.</p>";
+          document.getElementById('leetcode-helper-hint').innerHTML = "<h4>Error:</h4><p>Error updating the hint display. The extension may not work correctly.</p>";
+          document.getElementById('leetcode-helper-hint-container').style.display = 'block';
+        }
+      } catch (error) {
+        console.error("Error getting hint:", error);
+        try {
+          document.getElementById('leetcode-helper-loading').style.display = 'none';
+          document.getElementById('leetcode-helper-hint').innerHTML = `<h4>Error:</h4><p>${error.message || "Could not get hint. Please check the Gemini API key in extension settings."}</p>`;
+          document.getElementById('leetcode-helper-hint-container').style.display = 'block';
+        } catch (domError) {
+          console.error("Error updating DOM after hint error:", domError);
+        }
       }
-    } catch (error) {
-      console.error("Error getting hint:", error);
-      document.getElementById('leetcode-helper-loading').style.display = 'none';
-      document.getElementById('leetcode-helper-hint').innerHTML = `<h4>Error:</h4><p>${error.message || "Could not get hint. Please check the Gemini API key in extension settings."}</p>`;
-      document.getElementById('leetcode-helper-hint-container').style.display = 'block';
+    } else {
+      try {
+        document.getElementById('leetcode-helper-loading').style.display = 'none';
+        document.getElementById('leetcode-helper-hint').innerHTML = "<h4>Error:</h4><p>Could not extract code from the editor.</p>";
+        document.getElementById('leetcode-helper-hint-container').style.display = 'block';
+      } catch (domError) {
+        console.error("Error updating DOM after code extraction failure:", domError);
+      }
     }
-  } else {
-    document.getElementById('leetcode-helper-loading').style.display = 'none';
-    document.getElementById('leetcode-helper-hint').innerHTML = "<h4>Error:</h4><p>Could not extract code from the editor.</p>";
-    document.getElementById('leetcode-helper-hint-container').style.display = 'block';
+  } catch (error) {
+    console.error("Unexpected error in getHint:", error);
+    displayErrorMessage("An unexpected error occurred. Please try again.");
   }
 }
 
@@ -224,6 +249,11 @@ function displayErrorMessage(message) {
         if (hintContainer) {
             hintContainer.style.display = 'block';
         }
+        
+        const loadingElement = document.getElementById('leetcode-helper-loading');
+        if (loadingElement) {
+            loadingElement.style.display = 'none';
+        }
     } catch (error) {
         console.error("Error displaying error message:", error);
     }
@@ -234,26 +264,33 @@ function updateHintContainer(data) {
         const hintElement = document.getElementById('leetcode-helper-hint');
         const bugsElement = document.getElementById('leetcode-helper-bugs');
         const optimizationElement = document.getElementById('leetcode-helper-optimization');
+        
         hintElement.innerHTML = '';
         bugsElement.innerHTML = '';
         optimizationElement.innerHTML = '';
+        
+        if (data.hint) {
+          hintElement.innerHTML = `<h4>Hint:</h4><p>${formatTextWithCodeBlocks(data.hint)}</p>`;
+        }
+        
+        if (data.bugs) {
+          bugsElement.innerHTML = `<h4>Bugs & Edge Cases:</h4><p>${formatTextWithCodeBlocks(data.bugs)}</p>`;
+        }
+        
+        if (data.optimization) {
+          optimizationElement.innerHTML = `<h4>Optimization Tips:</h4><p>${formatTextWithCodeBlocks(data.optimization)}</p>`;
+        }
     } catch (error) {
-        console.error("Error getting hint container elements:", error);
+        console.error("Error updating hint container elements:", error);
+        throw error;
     }
-  if (data.hint) {
-    hintElement.innerHTML = `<h4>Hint:</h4><p>${formatTextWithCodeBlocks(data.hint)}</p>`;
-  }
-  
-  if (data.bugs) {
-    bugsElement.innerHTML = `<h4>Bugs & Edge Cases:</h4><p>${formatTextWithCodeBlocks(data.bugs)}</p>`;
-  }
-  
-  if (data.optimization) {
-    optimizationElement.innerHTML = `<h4>Optimization Tips:</h4><p>${formatTextWithCodeBlocks(data.optimization)}</p>`;
-  }
 }
 
 function formatTextWithCodeBlocks(text) {
+  if (!text) {
+    return '';
+  }
+  
   text = text.replace(/```([\s\S]+?)```/g, function(match, code) {
     const langMatch = code.match(/^(\w+)\s+([\s\S]+)$/);
     if (langMatch) {
