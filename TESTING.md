@@ -26,6 +26,7 @@ Before testing, ensure that:
    - Click on the LeetCode Helper extension icon in the toolbar
    - Enter your Gemini API key in the form
    - Click "Save API Key"
+   - Verify that the extension icon changes to the "enabled" state
    - The status should change to "Gemini API configured" with a green indicator
    ```
 
@@ -49,6 +50,7 @@ Before testing, ensure that:
    - After clicking "Get Hint", the overlay should show a loading spinner
    - After a few seconds, it should display personalized hints
    - Verify that the hints are relevant to your code and the problem
+   - Test collapsing and expanding the hint sections
    ```
 
 ## 🔧 Testing Different Scenarios
@@ -58,18 +60,28 @@ Before testing, ensure that:
 1. Write a fully correct solution to a problem
 2. Click "Get Hint"
 3. The extension should recognize that the solution is correct and suggest optimizations
+4. Test the collapsible sections for hint, bugs, and optimization information
 
 ### Test Case 2: Solution with Bugs
 
 1. Write a solution with intentional bugs or edge case issues
 2. Click "Get Hint"
 3. The extension should identify the bugs and provide guidance on fixing them
+4. Verify that the hints are well-formatted with bullet points and clear sections
 
 ### Test Case 3: Partial Solution
 
 1. Write only a partial solution or function signature
 2. Click "Get Hint"
 3. The extension should provide guidance on how to approach the problem
+4. Check that the animations work smoothly when expanding/collapsing sections
+
+### Test Case 4: UI Interaction
+
+1. Test minimizing and maximizing the overlay using the toggle button
+2. Verify that all animations function correctly
+3. Test expanding and collapsing individual hint sections
+4. Ensure the overlay responds smoothly to all interactions
 
 ## 🐞 Troubleshooting Common Issues
 
@@ -78,6 +90,7 @@ Before testing, ensure that:
 - **"Gemini API key not configured"** ❌
   - Ensure you've entered a valid API key in the extension popup
   - Check that the API key is validated correctly with Google's API
+  - Verify that the extension icon changes appropriately based on API key status
 
 - **"API key validation failed"** ❌
   - Verify your API key is correct
@@ -111,6 +124,7 @@ To test the performance of the extension:
 2. **UI Responsiveness** 🖱️
    - The extension UI should remain responsive while waiting for hints
    - Test if you can minimize the overlay while waiting for a response
+   - Verify that animations run smoothly on different devices and browser versions
 
 ## 🛠️ Development Debugging Tips
 
@@ -126,7 +140,14 @@ To test the performance of the extension:
 3. **Inspect DOM Elements** 🔍
    - Use DevTools to inspect the extension overlay
    - Check if elements are being created as expected
+   - Test the CSS animations and transitions using the Elements panel
 
 4. **Manual API Testing** 🧪
    - You can test the Gemini API directly using tools like Postman
    - This helps isolate issues between the extension and the API 
+
+5. **Icon State Testing** 🖼️
+   - Test that the extension icon changes correctly when the API key is:
+     - Configured correctly (should display enabled.png)
+     - Not configured or invalid (should display disabled.png)
+   - Verify icon changes are persistent between browser sessions 
