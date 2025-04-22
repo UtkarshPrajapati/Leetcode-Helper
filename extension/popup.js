@@ -97,7 +97,7 @@ function checkApiConfig() {
         }
 
         try {
-          chrome.action.setIcon({ path: { "16": "images/enabled.png" } });
+          chrome.action.setIcon({ path: { "128": "images/enabled.png" } });
           chrome.action.setBadgeText({ text: '' });
         } catch (iconError) {
           console.error('Error setting icon:', iconError);
@@ -120,7 +120,7 @@ function checkApiConfig() {
         }
         
         try {
-          chrome.action.setIcon({ path: { "16": "images/disabled.png" } });
+          chrome.action.setIcon({ path: { "128": "images/disabled.png" } });
           chrome.action.setBadgeText({ text: '' });
         } catch (iconError) {
           console.error('Error setting icon:', iconError);
@@ -205,9 +205,9 @@ function initializeIconState() {
     checkApiStatus().then(data => {
       try {
         if (data.status === 'ok') {
-          chrome.action.setIcon({ path: { "16": "images/enabled.png" } });
+          chrome.action.setIcon({ path: { "128": "images/enabled.png" } });
         } else {
-          chrome.action.setIcon({ path: { "16": "images/disabled.png" } });
+          chrome.action.setIcon({ path: { "128": "images/disabled.png" } });
         }
         // Clear any existing badge
         chrome.action.setBadgeText({ text: '' });

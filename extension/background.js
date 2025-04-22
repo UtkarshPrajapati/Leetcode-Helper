@@ -4,9 +4,9 @@ chrome.runtime.onInstalled.addListener(function(details) {
   checkApiStatus()
     .then(data => {
       if (data.status === 'ok') {
-        chrome.action.setIcon({ path: { "16": "images/enabled.png" } });
+        chrome.action.setIcon({ path: { "128": "images/enabled.png" } });
       } else {
-        chrome.action.setIcon({ path: { "16": "images/disabled.png" } });
+        chrome.action.setIcon({ path: { "128": "images/disabled.png" } });
       }
       // Clear any existing badge
       chrome.action.setBadgeText({ text: '' });
@@ -14,7 +14,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
     .catch(error => {
       console.error('Error checking API status on install:', error);
       // Set disabled icon on error
-      chrome.action.setIcon({ path: { "16": "images/disabled.png" } });
+      chrome.action.setIcon({ path: { "128": "images/disabled.png" } });
       chrome.action.setBadgeText({ text: '' });
     });
 });

@@ -8,15 +8,13 @@
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
-      "16": "images/disabled.png"
+      "128": "images/disabled.png"
     }
   },
   "background": {
     "service_worker": "background.js"
   },
   "icons": {
-    "16": "images/disabled.png",
-    "48": "images/disabled.png",
     "128": "images/disabled.png"
   },
   "content_scripts": [
