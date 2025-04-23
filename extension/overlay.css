@@ -267,9 +267,6 @@
   transition: all 0.2s ease;
 }
 
-.leetcode-helper-section-header:hover {
-  background-color: rgba(44, 187, 93, 0.05);
-}
 
 .leetcode-helper-section-header h4 {
   margin: 0;
@@ -292,6 +289,7 @@
 
 .leetcode-helper-button i {
   transition: transform 0.3s ease;
+  margin-right: 8px;
 }
 
 .leetcode-helper-button i.fa-plus {
