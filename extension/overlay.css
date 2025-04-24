@@ -137,6 +137,7 @@
   opacity: 1;
   transform: translateY(0);
   will-change: transform, opacity, max-height;
+  white-space: pre-line;
 }
 
 .leetcode-helper-content-section.collapsed {

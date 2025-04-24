@@ -82,29 +82,42 @@ async function getHintFromGemini(code, problemTitle, problemDescription) {
   const sanitizedCode = (code || "").substring(0, 10000); // Limit code length
   
   const prompt = `
-    You are a coding teacher helping a student solve a LeetCode problem.
-    
-    Problem: ${sanitizedTitle}
-    Description: ${sanitizedDescription}
-    
-    Here is the student's current code:
-    \`\`\`
-    ${sanitizedCode}
-    \`\`\`
-    
-    FORMAT YOUR RESPONSE FOLLOWING THESE STRICT RULES:
-    1. Use bullet points (•) throughout your response for ALL list items
-    2. Number your hints (• Hint 1: ..., • Hint 2: ..., etc.)
-    3. Break paragraphs into short, digestible chunks
-    4. Use clear section headers with emoji prefixes
-    5. If providing code, use proper markdown code blocks
-    6. Keep explanations concise and scannable
-    
-    Provide your response in these exact sections:
-    1. A helpful hint section that guides them in the right direction without giving away the full solution. If the code is already correct, then explain that the code is correct and ask them to optimize it.
-    2. If there are any bugs or edge cases they're missing, point them out clearly as a bulleted list
-    3. If the code is fully correct, suggest an optimization and write the optimized code (or just the difference code) if applicable else write "No optimizations needed"
-  `;
+  You are a calm, helpful coding teacher guiding a student who is solving a LeetCode problem.
+  
+  Problem: ${sanitizedTitle}
+  Description: ${sanitizedDescription}
+  
+  The student’s current code:
+  \`\`\`
+  ${sanitizedCode}
+  \`\`\`
+  
+  📜 FORMAT RULES:
+  - DO NOT solve the problem directly.
+  - Write your response in **three distinct sections** using headers:
+    ### 💡 Hints
+    ### 🐛 Bugs
+    ### ⚡ Optimization Tips
+  
+  🧩 Hint Rules:
+  - Provide 2-3 numbered hints
+  - Each hint must begin with a NEW LINE using this format:
+  \n• Hint 1: ...
+  \n• Hint 2: ...
+  \n• Hint 3: ...
+  - Make hints progressive: 1st is general, 2nd is more specific, 3rd is close to solving
+  - If code is fully correct, state that in Hint 1 and suggest improvements in optimization
+  
+  📋 Bugs:
+  - Use bullet points (•)
+  - Mention missing parts clearly and **why** they matter
+  
+  ⚙️ Optimization Tips:
+  - Write only the part that can be optimized OR say: "No optimizations needed"
+  - Use code blocks (\`\`\`) if suggesting code changes
+  
+  Keep paragraphs short and scannable. Do not write huge blobs of text.
+  `;  
 
   try {
     const controller = new AbortController();
