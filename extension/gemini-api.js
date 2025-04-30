@@ -94,10 +94,11 @@ async function getHintFromGemini(code, problemTitle, problemDescription) {
   
   📜 FORMAT RULES:
   - DO NOT solve the problem directly.
+  - Make the thing bold by encapsulating the text like *sample text* if that word/group of word is important.
   - Write your response in **three distinct sections** using headers:
-    ### 💡 Hints
-    ### 🐛 Bugs
-    ### ⚡ Optimization Tips
+    💡 Hints
+    🐛 Bugs
+    ⚡ Optimization Tips
   
   🧩 Hint Rules:
   - Provide 2-3 numbered hints
@@ -113,7 +114,7 @@ async function getHintFromGemini(code, problemTitle, problemDescription) {
   - Mention missing parts clearly and **why** they matter
   
   ⚙️ Optimization Tips:
-  - Write only the part that can be optimized OR say: "No optimizations needed"
+  - Write only the part that can be optimized, and if it can't be optimised then say: "No optimizations needed"
   - Use code blocks (\`\`\`) if suggesting code changes
   
   Keep paragraphs short and scannable. Do not write huge blobs of text.
@@ -121,7 +122,7 @@ async function getHintFromGemini(code, problemTitle, problemDescription) {
 
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 30000);
     
     const response = await fetch(
       `${GEMINI_API_ENDPOINT}?key=${GEMINI_API_KEY}`,
@@ -144,7 +145,7 @@ async function getHintFromGemini(code, problemTitle, problemDescription) {
               }
             },
             thinkingConfig: {
-              thinkingBudget: 0
+              thinkingBudget: 1000
             }
           }
         }),

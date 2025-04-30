@@ -354,6 +354,9 @@ function formatTextWithCodeBlocks(text) {
   // Style hint numbers (Hint 1, Hint 2, etc.)
   text = text.replace(/(Hint \d+:)/g, '<strong>$1</strong>');
   
+  // Format text surrounded by single asterisks as bold
+  text = text.replace(/\*([^*]+)\*/g, '<strong>$1</strong>');
+  
   // Format code blocks
   text = text.replace(/```([\s\S]+?)```/g, function(match, code) {
     const langMatch = code.match(/^(\w+)\s+([\s\S]+)$/);
