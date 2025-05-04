@@ -329,7 +329,7 @@ async function getHintWithTestResults(code, problemTitle, problemDescription, te
               required: ["hint", "bugs", "optimization"] // Make them required
             },
              thinkingConfig: {
-                 thinkingBudget: 1500 // Slightly higher budget for more complex analysis?
+                 thinkingBudget: 1200 // Slightly higher budget for more complex analysis
              }
           }
         }),
