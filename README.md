@@ -34,8 +34,10 @@ A Chrome extension that provides personalized hints for LeetCode problems using 
 4. **Using the Extension** 🚀
    - Navigate to any LeetCode problem
    - Write your solution in the code editor
-   - Click the "Get Hint" button in the LeetCode Helper overlay
-   - The extension will analyze your code and provide personalized hints
+   - You can now click the **"Run Code" button** on LeetCode. The extension will wait for the results to appear.
+   - After running, the extension will analyze the results, including **console output, error details (if any), and individual test case results (Input, Output, Expected, and whether they match)**. This information will be used to provide more context-aware hints.
+   - Alternatively, you can still click the "Get Hint" button in the LeetCode Helper overlay.
+   - The extension will analyze your code and provide personalized hints.
    - Expand or collapse hint sections as needed to focus on relevant information
 
 ## 🔒 Privacy

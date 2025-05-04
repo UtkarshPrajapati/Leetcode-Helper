@@ -53,6 +53,41 @@ Before testing, ensure that:
    - Test collapsing and expanding the hint sections
    ```
 
+### 3. Testing Run Code and Result Analysis 📊
+
+1. **Navigate to a LeetCode Problem** 🧩
+   ```
+   - Go to any LeetCode problem page.
+   ```
+
+2. **Test Running Code and Waiting for Results** ▶️
+   ```
+   - Write some code in the LeetCode editor.
+   - Click the standard LeetCode "Run Code" button.
+   - Observe the browser console (F12) for logs from `getLeetCodeTestSummaryJSON` indicating the run is initiated and the script is waiting for results.
+   - Verify that the script correctly waits for the results panel to appear and populate.
+   ```
+
+3. **Test Error Analysis** ❌
+   ```
+   - Write code that will cause a runtime error (e.g., division by zero, accessing an undefined variable).
+   - Click "Run Code".
+   - After the error appears on LeetCode, check the browser console logs.
+   - Verify that the script detects the error state and attempts to extract the specific error message and the "Last Executed Input".
+   - Check that the extracted error details and last input are logged correctly.
+   ```
+
+4. **Test Test Case Extraction and Analysis** ✅
+   ```
+   - Write code that passes some test cases and potentially fails others (or passes all).
+   - Click "Run Code".
+   - After the test results appear (showing "Accepted", "Wrong Answer", etc.), check the browser console logs.
+   - Verify that the script identifies the test case tabs.
+   - Verify that the script clicks each test case tab, waits briefly, and extracts the Input, Output, and Expected values for each case.
+   - Check that the extracted test case data (including the `match` status) is logged correctly in the final JSON summary.
+   - Test with problems that have multiple test cases.
+   ```
+
 ## 🔧 Testing Different Scenarios
 
 ### Test Case 1: Correct Solution
