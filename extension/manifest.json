@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "LeetCode Helper",
-  "version": "1.0",
+  "version": "1.2",
   "description": "Get personalized hints and code improvement suggestions on LeetCode problems using Gemini AI",
   "permissions": ["activeTab", "storage", "tabs"],
   "host_permissions": ["https://generativelanguage.googleapis.com/*"],
