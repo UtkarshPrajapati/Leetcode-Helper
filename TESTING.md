@@ -1,188 +1,101 @@
 # 🧪 Testing Guide for LeetCode Helper
 
-This document provides guidance on how to test the LeetCode Helper extension during development. 🚀
+This document provides guidance on how to manually test the LeetCode Helper extension during development. 🚀
 
 ## 📋 Prerequisites
 
 Before testing, ensure that:
 
-1. You have a valid Gemini API key from [Google AI Studio](https://aistudio.google.com/apikey)
-2. You have installed the extension in Chrome developer mode
-3. You have configured the API key in the extension settings
+1.  You have a valid Gemini API key from [Google AI Studio](https://aistudio.google.com/apikey).
+2.  You have installed the extension in Chrome developer mode (`chrome://extensions/` -> Load unpacked).
+3.  You have configured and saved a valid API key via the extension's popup. The popup status should be green, and the toolbar icon should be enabled.
 
 ## 🔍 Manual Testing Steps
 
-### 1. Testing Extension Installation and Configuration
+### 1. Installation and Configuration
 
-1. **Install the Extension in Developer Mode** 📦
-   ```
-   - Open Chrome and navigate to chrome://extensions/
-   - Enable "Developer mode" in the top-right corner
-   - Click "Load unpacked" and select the `extension` folder
-   ```
+*(These steps verify the basic setup)*
 
-2. **Configure the Gemini API Key** 🔑
-   ```
-   - Click on the LeetCode Helper extension icon in the toolbar
-   - Enter your Gemini API key in the form
-   - Click "Save API Key"
-   - Verify that the extension icon changes to the "enabled" state
-   - The status should change to "Gemini API configured" with a green indicator
-   ```
+1.  **Install/Reload:** Load or reload the extension via `chrome://extensions/`. Check for manifest errors.
+2.  **Open Popup:** Click the extension icon in the toolbar.
+3.  **Save Invalid Key:** Enter an obviously invalid key (e.g., "test") and click Save. Verify an error message appears, status stays red/disconnected, and the icon remains disabled.
+4.  **Save Valid Key:** Enter your real Gemini API key and click Save.
+    *   Verify the "Validating..." message appears.
+    *   Verify the status indicator turns green, the text updates to "Gemini API configured...", and the toolbar icon changes to the green enabled state.
+5.  **Re-open Popup:** Close and reopen the popup. Verify the configured state persists.
+6.  **Check Connection:** Click the "Check Connection" button. Verify it confirms the configured status.
 
-### 2. Testing the Extension on LeetCode
+### 2. Basic Hint Generation ("Get Hint" Button)
 
-1. **Navigate to a LeetCode Problem** 🧩
-   ```
-   - Go to https://leetcode.com/problems/two-sum/ (or any other problem)
-   - The LeetCode Helper overlay should appear in the bottom right corner
-   ```
+*(These steps test the original functionality without test case analysis)*
 
-2. **Test Code Extraction** 💻
-   ```
-   - Write some code in the LeetCode editor
-   - Click "Get Hint" in the LeetCode Helper overlay
-   - Check the browser console (F12) to see if the code was extracted correctly
-   ```
+1.  **Navigate:** Go to any LeetCode problem (e.g., `/problems/two-sum/`). Verify the overlay appears.
+2.  **Empty Editor:** Click "<i class="fa-solid fa-wand-magic-sparkles"></i> Get Hint" with an empty editor. Verify a reasonable response (e.g., hints on how to start).
+3.  **Partial Code:** Write some incomplete code (e.g., just a function signature). Click "Get Hint". Verify hints guide you on the next steps. Check console (F12) for code extraction logs.
+4.  **Plausible Code:** Write code that attempts the solution (correct or incorrect). Click "Get Hint".
+    *   Verify the loading spinner appears.
+    *   Verify hints, bugs, and optimizations are displayed within a reasonable time (e.g., 3-10 seconds).
+    *   Verify the content seems relevant to the code provided.
+    *   Test collapsing/expanding the 💡, 🐛, ⚡ sections.
+5.  **Minimize/Maximize:** Test the toggle button (`-`/`+`) on the overlay header while idle and while loading a hint.
 
-3. **Test Hint Generation** 💡
-   ```
-   - After clicking "Get Hint", the overlay should show a loading spinner
-   - After a few seconds, it should display personalized hints
-   - Verify that the hints are relevant to your code and the problem
-   - Test collapsing and expanding the hint sections
-   ```
+### 3. Advanced Hint Generation ("Hint (Auto-Test)" Button)
 
-### 3. Testing Run Code and Result Analysis 📊
+*(These steps test the new feature integrating test execution)*
 
-1. **Navigate to a LeetCode Problem** 🧩
-   ```
-   - Go to any LeetCode problem page.
-   ```
+1.  **Navigate:** Go to a LeetCode problem.
+2.  **Empty Editor:** Click "<i class="fa-solid fa-vial-circle-check"></i> Hint (Auto-Test)".
+    *   It should still attempt to run the code (which will likely fail immediately on LeetCode).
+    *   Check the console (F12) for logs from `testcase.js` attempting to run and parse results.
+    *   Verify the hint eventually displayed acknowledges the code is empty or likely failed execution.
+3.  **Code with Runtime Error:** Write code that will cause a runtime error (e.g., `a = 1 / 0`, accessing `null.property`). Click "Hint (Auto-Test)".
+    *   Verify the loading text updates (e.g., "Running tests...", "Getting hint...").
+    *   Check console logs for `testcase.js` detecting the error state and extracting error details/last input.
+    *   Verify the final hint **explicitly mentions the runtime error** found in the `🐛 Bugs & Failing Tests` section, potentially referencing the `errorDetails` from the parsed results.
+4.  **Code Failing Some Test Cases:** Write code that is logically incorrect for some inputs (e.g., Two Sum solution that doesn't handle duplicates correctly if the test cases include them). Click "Hint (Auto-Test)".
+    *   Verify loading states and console logs showing test case parsing.
+    *   Verify the final hint **specifically mentions the failing test cases** in the `🐛 Bugs & Failing Tests` section, ideally referencing the Input, Output, and Expected values parsed by `testcase.js`.
+5.  **Correct Code:** Write a fully correct solution that passes all test cases. Click "Hint (Auto-Test)".
+    *   Verify loading states and console logs showing test case parsing (all should have `match: true`).
+    *   Verify the `🐛 Bugs & Failing Tests` section states something like "No bugs detected based on the provided test results."
+    *   Verify the `💡 Hints` and `⚡ Optimization Tips` focus on explaining the solution, discussing complexity, or suggesting alternatives/refinements.
+6.  **Time Limit Exceeded (Harder to test manually):** If you have code that might TLE, run "Hint (Auto-Test)". Check if `testcase.js` logs "Time Limit Exceeded" as the `consoleOutput` and if the Gemini hint mentions potential performance issues.
 
-2. **Test Running Code and Waiting for Results** ▶️
-   ```
-   - Write some code in the LeetCode editor.
-   - Click the standard LeetCode "Run Code" button.
-   - Observe the browser console (F12) for logs from `getLeetCodeTestSummaryJSON` indicating the run is initiated and the script is waiting for results.
-   - Verify that the script correctly waits for the results panel to appear and populate.
-   ```
+## 🔧 Testing Specific Scenarios & Edge Cases
 
-3. **Test Error Analysis** ❌
-   ```
-   - Write code that will cause a runtime error (e.g., division by zero, accessing an undefined variable).
-   - Click "Run Code".
-   - After the error appears on LeetCode, check the browser console logs.
-   - Verify that the script detects the error state and attempts to extract the specific error message and the "Last Executed Input".
-   - Check that the extracted error details and last input are logged correctly.
-   ```
-
-4. **Test Test Case Extraction and Analysis** ✅
-   ```
-   - Write code that passes some test cases and potentially fails others (or passes all).
-   - Click "Run Code".
-   - After the test results appear (showing "Accepted", "Wrong Answer", etc.), check the browser console logs.
-   - Verify that the script identifies the test case tabs.
-   - Verify that the script clicks each test case tab, waits briefly, and extracts the Input, Output, and Expected values for each case.
-   - Check that the extracted test case data (including the `match` status) is logged correctly in the final JSON summary.
-   - Test with problems that have multiple test cases.
-   ```
-
-## 🔧 Testing Different Scenarios
-
-### Test Case 1: Correct Solution
-
-1. Write a fully correct solution to a problem
-2. Click "Get Hint"
-3. The extension should recognize that the solution is correct and suggest optimizations
-4. Test the collapsible sections for hint, bugs, and optimization information
-
-### Test Case 2: Solution with Bugs
-
-1. Write a solution with intentional bugs or edge case issues
-2. Click "Get Hint"
-3. The extension should identify the bugs and provide guidance on fixing them
-4. Verify that the hints are well-formatted with bullet points and clear sections
-
-### Test Case 3: Partial Solution
-
-1. Write only a partial solution or function signature
-2. Click "Get Hint"
-3. The extension should provide guidance on how to approach the problem
-4. Check that the animations work smoothly when expanding/collapsing sections
-
-### Test Case 4: UI Interaction
-
-1. Test minimizing and maximizing the overlay using the toggle button
-2. Verify that all animations function correctly
-3. Test expanding and collapsing individual hint sections
-4. Ensure the overlay responds smoothly to all interactions
+*   **Different Problems:** Test on various problems (easy, medium, hard) with different input/output types (arrays, strings, numbers, lists, trees).
+*   **Long Code/Descriptions:** Test with problems having very long descriptions or if you paste very long code (approaching the truncation limits) to ensure sanitization works.
+*   **Rapid Clicks:** Click the hint buttons multiple times quickly. Ensure the UI handles loading states correctly and doesn't break.
+*   **Network Interruption:** Use DevTools (Network tab -> Offline) to simulate network loss while waiting for a hint. Verify a proper error message is shown.
+*   **Invalid API Key (After Success):** Configure a valid key, get a hint, then *change* the key in the popup to an invalid one, and try getting another hint. Verify it fails correctly.
+*   **LeetCode UI Changes:** Be aware that if LeetCode updates its site structure, the selectors in `content.js` (for problem info) and `testcase.js` (for run button, results panels, test cases) might break. Testing involves checking if these extractions still work after known LeetCode updates.
 
 ## 🐞 Troubleshooting Common Issues
 
-### API Key Issues
-
-- **"Gemini API key not configured"** ❌
-  - Ensure you've entered a valid API key in the extension popup
-  - Check that the API key is validated correctly with Google's API
-  - Verify that the extension icon changes appropriately based on API key status
-
-- **"API key validation failed"** ❌
-  - Verify your API key is correct
-  - Make sure you have sufficient quota/credits on your Google AI account
-
-### Extension Functionality Issues
-
-- **Overlay not appearing** 🔍
-  - Refresh the page
-  - Check if the URL matches the pattern in the manifest
-  - Look for errors in the browser console (F12)
-
-- **Cannot extract code** 📝
-  - Check browser console for error messages
-  - Verify if the Monaco editor is fully loaded
-  - Try writing more code in the editor
-
-- **No hints received** 💬
-  - Verify your API key is working
-  - Check network requests in the browser DevTools
-  - Try with a simpler code sample
+*   **API Key:** See README troubleshooting. Check popup status and console for API errors (4xx, 5xx status codes).
+*   **Overlay/UI:** See README troubleshooting. Check console for JavaScript errors in `content.js` or `overlay.css` issues.
+*   **Code Extraction:** Check console logs from `content.js`. Did `monaco-extractor.js` work, or did it fall back to DOM extraction? Is the fallback finding the code?
+*   **Test Runner (`testcase.js`):**
+    *   **Run Button Not Found:** Check the `selectors.runButton` in `testcase.js` against LeetCode's current HTML.
+    *   **Timeout Waiting for Results:** LeetCode might be slow, or the `selectors.consoleResult` might be wrong, or the `MutationObserver` logic isn't detecting the change. Increase timeout in `testcase.js` for debugging.
+    *   **Incorrect Parsing:** Check console logs. Did it detect the correct state (Error vs. Cases)? Are the selectors for error messages or test case elements (`Input`, `Output`, `Expected`, tabs) still valid? Add more `console.log` statements within `testcase.js` during parsing loops to see what data is being found.
+*   **Hint Content Issues:** If hints seem irrelevant or badly formatted:
+    *   Check the prompt being sent to Gemini (log it from `gemini-api.js`).
+    *   Check the raw JSON response from Gemini (log it). Is Gemini following the format instructions and schema?
+    *   Check the `formatTextWithCodeBlocks` function in `content.js`.
 
 ## 📊 Performance Testing
 
-To test the performance of the extension:
-
-1. **Response Time** ⏱️
-   - Measure the time from clicking "Get Hint" to receiving a response
-   - Should typically be within 2-5 seconds depending on network and AI processing time
-
-2. **UI Responsiveness** 🖱️
-   - The extension UI should remain responsive while waiting for hints
-   - Test if you can minimize the overlay while waiting for a response
-   - Verify that animations run smoothly on different devices and browser versions
+*   **Response Time:**
+    *   Time the "<i class="fa-solid fa-wand-magic-sparkles"></i> Get Hint" button (should be faster, mainly Gemini API time).
+    *   Time the "<i class="fa-solid fa-vial-circle-check"></i> Hint (Auto-Test)" button (will be longer, includes LeetCode run time + parsing time + Gemini API time). Note both times.
+*   **UI Responsiveness:** Ensure the overlay can be minimized/maximized and scrolled smoothly even while waiting for either type of hint.
 
 ## 🛠️ Development Debugging Tips
 
-1. **Use Browser Console** 🖥️
-   - Press F12 to open DevTools
-   - Check the Console tab for errors and logs
-   - Monitor Network requests to see API calls
-
-2. **Test Code Changes** 🔄
-   - After making changes to the extension, refresh it in `chrome://extensions/`
-   - You may need to reload the LeetCode page as well
-
-3. **Inspect DOM Elements** 🔍
-   - Use DevTools to inspect the extension overlay
-   - Check if elements are being created as expected
-   - Test the CSS animations and transitions using the Elements panel
-
-4. **Manual API Testing** 🧪
-   - You can test the Gemini API directly using tools like Postman
-   - This helps isolate issues between the extension and the API 
-
-5. **Icon State Testing** 🖼️
-   - Test that the extension icon changes correctly when the API key is:
-     - Configured correctly (should display enabled.png)
-     - Not configured or invalid (should display disabled.png)
-   - Verify icon changes are persistent between browser sessions 
+1.  **Console is King:** Use `console.log`, `console.warn`, `console.error` liberally in `content.js`, `gemini-api.js`, and `testcase.js`. Check the correct console (the one for the LeetCode tab, not the popup or background).
+2.  **Reload Extension:** After code changes, always reload the extension from `chrome://extensions/` (click the reload icon). Refresh the LeetCode page (`Ctrl+R` or `Cmd+R`).
+3.  **Inspect Elements:** Use DevTools (Elements tab) to inspect the overlay and LeetCode page elements. Verify selectors used in the code are correct.
+4.  **Network Tab:** Monitor requests to `generativelanguage.googleapis.com`. Check request payload (is the prompt correct? Is the test data included?) and the response (status code, JSON body).
+5.  **Debug `testcase.js`:** Add `debugger;` statements inside `testcase.js` and use the DevTools Sources panel to step through the code execution, especially the parsing logic, while a LeetCode run is completing.
+6.  **Isolate API Calls:** Use tools like `curl` or Postman to send the exact same prompt (logged from `gemini-api.js`) directly to the Gemini API endpoint. This helps determine if issues lie in the extension's logic or the AI's response generation. 

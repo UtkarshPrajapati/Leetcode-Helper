@@ -20,7 +20,7 @@
   "content_scripts": [
     {
       "matches": ["https://leetcode.com/problems/*"],
-      "js": ["gemini-api.js", "content.js", "testing.js"],
+      "js": ["gemini-api.js", "content.js", "testcase.js"],
       "css": ["overlay.css"]
     }
   ],
