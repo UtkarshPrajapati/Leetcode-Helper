@@ -380,6 +380,18 @@
       background-color: var(--dark-border);
       margin: 16px 0;
     }
+    /* **** ADD THESE RULES **** */
+    .card a { /* Style links within the configuration card */
+      color: var(--primary-color); /* Use the extension's primary green */
+      text-decoration: none; /* Remove underline by default */
+      font-weight: 500;      /* Make it slightly bolder */
+      transition: color 0.2s ease;
+    }
+    .card a:hover {
+      color: var(--primary-light); /* Use a lighter green on hover */
+      text-decoration: underline; /* Add underline on hover for clarity */
+    }
+    /* **** END OF RULES TO ADD **** */
   </style>
 </head>
 <body>
@@ -405,8 +417,15 @@
       <button id="check-connection" class="btn" style="margin-bottom: 12px;">Check Connection</button>
       
       <h3 style="margin-top: 12px; margin-bottom: 4px;">API Key Configuration</h3>
-      <p id="api-key-instruction" style="margin-bottom: 8px;">Enter your Gemini API key to enable the extension:</p>
-      <p id="change-key-instruction" style="display: none; margin-bottom: 8px;">Your API key is configured. You can change it below if needed:</p>
+      <p id="api-key-instruction" style="margin-bottom: 8px;">
+          Enter your Gemini API key. Need one?
+          <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer">Get your key from Google AI Studio</a>.
+      </p>
+
+      <p id="change-key-instruction" style="display: none; margin-bottom: 8px;">
+          Your API key is configured. You can change it below if needed.
+          (<a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer" title="Opens Google AI Studio in a new tab">Get a new key</a>)
+      </p>
       <form id="api-key-form">
         <div class="form-group" style="margin-bottom: 12px;">
           <label for="api-key-input" style="margin-bottom: 4px;">Gemini API Key <span id="change-key-label" style="color: var(--primary-color); font-size: 12px; display: none;">(Change Key)</span></label>
