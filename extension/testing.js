@@ -409,33 +409,6 @@ async function getLeetCodeTestSummaryJSON() {
 
     // 4. Return results
     console.log("Phase 4: Packaging results...");
+    // Ensure the function directly returns the result object
     return { consoleOutput, errorDetails, testCases };
-} // --- End of getLeetCodeTestSummaryJSON ---
-
-// --- Execute the function and handle the promise ---
-getLeetCodeTestSummaryJSON().then(result => {
-    // Check if result is not null/undefined before stringifying
-    if (result) {
-        console.log("--- LeetCode Test Summary (Structured JSON) ---");
-        console.log(JSON.stringify(result, null, 2));
-        console.log("--- End of Summary ---");
-    } else {
-        // This case might occur if the function somehow returns undefined, though it's designed to always return an object.
-        console.error("Script execution returned undefined or null unexpectedly.");
-        // Log a generic error structure
-         console.log(JSON.stringify({
-             consoleOutput: "Script Execution Failed",
-             errorDetails: { message: "The main script function returned no result.", lastInput: null },
-             testCases: []
-         }, null, 2));
-    }
-}).catch(error => {
-    // Catch any unexpected errors *during the script's execution itself*
-    console.error("An unexpected error occurred during the script execution:", error);
-    // Log the error in the same JSON format for consistency
-    console.log(JSON.stringify({
-        consoleOutput: "Script Execution Error",
-        errorDetails: { message: error.message || "Unknown script error", stack: error.stack }, // Include stack trace if available
-        testCases: []
-    }, null, 2));
-});
+} // <--- Function definition ends here. REMOVE any execution code below this line.

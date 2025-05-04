@@ -87,7 +87,7 @@ async function getHintFromGemini(code, problemTitle, problemDescription) {
   Problem: ${sanitizedTitle}
   Description: ${sanitizedDescription}
   
-  The student’s current code:
+  The student's current code:
   \`\`\`
   ${sanitizedCode}
   \`\`\`
@@ -209,6 +209,214 @@ async function getHintFromGemini(code, problemTitle, problemDescription) {
     }
     return {
       hint: `Error getting hint: ${error.message}`,
+      bugs: "",
+      optimization: ""
+    };
+  }
+}
+
+async function getHintWithTestResults(code, problemTitle, problemDescription, testResultsJson) {
+  console.log("Preparing advanced hint request with test results:", testResultsJson);
+
+  if (!await isApiKeyConfigured()) {
+    // Return the standard error structure expected by updateHintContainer
+    return {
+      hint: "Error: Gemini API key not configured. Please set your API key in the extension settings.",
+      bugs: "",
+      optimization: ""
+    };
+  }
+
+  // Sanitize inputs (same as getHintFromGemini)
+  const sanitizedTitle = (problemTitle || "Untitled Problem").substring(0, 500);
+  const sanitizedDescription = (problemDescription || "No description provided").substring(0, 1000);
+  const sanitizedCode = (code || "").substring(0, 10000); // Limit code length
+
+  // Prepare test results string (stringify and potentially truncate)
+  let testResultsString = "Test results were not available or failed to run.";
+  try {
+    // Stringify prettily for the prompt, limit length to avoid exceeding token limits
+    const fullString = JSON.stringify(testResultsJson, null, 2);
+    const maxLength = 5000; // Limit length sent in prompt
+    if (fullString.length > maxLength) {
+        testResultsString = fullString.substring(0, maxLength) + "\n... (results truncated)";
+        console.warn(`Test results JSON string truncated to ${maxLength} characters for Gemini prompt.`);
+    } else {
+        testResultsString = fullString;
+    }
+  } catch (e) {
+    console.error("Error stringifying test results:", e);
+    testResultsString = "Error processing test results for prompt.";
+  }
+
+  // **** CONSTRUCT THE NEW PROMPT ****
+  const prompt = `
+  You are a calm, helpful coding teacher guiding a student who is solving a LeetCode problem.
+  The student has run their code against LeetCode's test cases. Analyze their code *in conjunction with the test results*.
+
+  Problem: ${sanitizedTitle}
+  Description: ${sanitizedDescription}
+
+  Student's Code:
+  \`\`\`
+  ${sanitizedCode}
+  \`\`\`
+
+  LeetCode Test Execution Summary:
+  \`\`\`json
+  ${testResultsString}
+  \`\`\`
+
+  📜 FORMAT RULES:
+  - DO NOT solve the problem directly.
+  - Make important words/phrases bold like *sample text*.
+  - Write your response in **three distinct sections** using headers:
+    💡 Hints
+    🐛 Bugs & Failing Tests
+    ⚡ Optimization Tips
+
+  🧩 Hint Rules:
+  - Provide 2-3 numbered hints, starting each on a NEW LINE (e.g., "\\n• Hint 1: ..."). Use exactly this format including the newline.
+  - Make hints progressive.
+  - If the code is correct according to tests (e.g., "Accepted" or all cases match), focus hints on understanding *why* it's correct or potential optimizations/alternative approaches.
+  - If tests fail or errors occur, tailor hints towards fixing the issues revealed by the test results.
+
+  📋 Bugs & Failing Tests:
+  - Use bullet points (•), starting each on a new line (e.g., "\\n• Issue 1: ...").
+  - If the \`errorDetails\` field in the JSON is *not* null, focus on explaining that specific error and relate it to the \`lastInput\`.
+  - If \`testCases\` are present and some have \`match: false\`, explain *why* the code fails for those specific inputs. Refer to the 'Input', 'Output', and 'Expected' values from the JSON.
+  - Clearly state *why* parts of the code lead to the errors or failed tests.
+  - If tests pass but the overall \`consoleOutput\` indicates an issue (e.g., Time Limit Exceeded, Memory Limit Exceeded, Runtime Error not caught by specific cases), address that.
+  - If all tests seem to pass based on the JSON (\`match: true\` for all cases and no \`errorDetails\`), state "No bugs detected based on the provided test results."
+
+  ⚙️ Optimization Tips:
+  - Use bullet points (•), starting each on a new line (e.g., "\\n• Optimization 1: ...").
+  - Suggest improvements for time or space complexity, especially if tests indicate performance issues (like Time Limit Exceeded, if captured in consoleOutput).
+  - If the code is correct and reasonably efficient, suggest alternative approaches or minor stylistic improvements.
+  - Use code blocks (\`\`\`) for suggested code changes.
+  - If no optimizations seem necessary based on the code and test results, state: "No specific optimizations recommended based on these results."
+
+  Keep paragraphs short and scannable. Focus on the *link* between the code and the test outcomes. Ensure hints, bugs, and optimizations points start on new lines as specified.
+  `;
+  // **** END OF NEW PROMPT ****
+
+  try {
+    const controller = new AbortController();
+    // Give potentially complex analysis more time
+    const timeoutId = setTimeout(() => controller.abort(), 45000); // 45 seconds timeout
+
+    console.log("Sending advanced hint request to Gemini..."); // Log before fetch
+
+    const response = await fetch(
+      `${GEMINI_API_ENDPOINT}?key=${GEMINI_API_KEY}`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { // Use the defined schema
+            temperature: 0.2,
+            response_mime_type: "application/json",
+            response_schema: {
+              type: "OBJECT",
+              properties: {
+                hint: { type: "STRING" },
+                bugs: { type: "STRING" },        // Schema property name
+                optimization: { type: "STRING" } // Schema property name
+              },
+              required: ["hint", "bugs", "optimization"] // Make them required
+            },
+             thinkingConfig: {
+                 thinkingBudget: 1500 // Slightly higher budget for more complex analysis?
+             }
+          }
+        }),
+        signal: controller.signal
+      }
+    );
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+        let errorBodyText = await response.text(); // Read body for details
+        console.error(`Gemini API Error Response (${response.status}):`, errorBodyText); // Log the raw error body
+        let message = `Network error or API issue. Status: ${response.status}. Check console for details.`;
+        if (response.status === 400) {
+          message = "API key error: The provided API key is invalid, quota issue, or the request format is incorrect. Check console.";
+        } else if (response.status === 429) {
+          message = "API Error: Rate limit exceeded or quota issue. Please try again later.";
+        } else if (response.status >= 500) {
+            message = `Gemini API server error (${response.status}). Please try again later. Check console.`;
+        }
+        // Try to extract a message from common error formats
+        try {
+            const errorJson = JSON.parse(errorBodyText);
+            if (errorJson?.error?.message) {
+                message += ` Server Message: ${errorJson.error.message}`;
+            }
+        } catch(e) { /* Body wasn't JSON */ }
+
+        throw new Error(message);
+    }
+
+    const result = await response.json();
+    console.log("Received Gemini response (Advanced Hint):", result); // Log successful response
+
+    // Parse the result using the defined schema structure
+    try {
+      if (!result.candidates || !result.candidates.length) {
+        throw new Error("Empty response structure from Gemini API");
+      }
+
+      const content = result.candidates[0].content;
+      if (!content || !content.parts || !content.parts.length) {
+           throw new Error("Invalid response structure: Missing content parts");
+      }
+
+      const part = content.parts[0];
+
+      // Gemini should ideally return JSON directly because of response_mime_type
+      if (part.text) {
+          // Attempt to parse if it's text, but this is less ideal
+          console.warn("Gemini returned text instead of direct JSON, attempting parse.");
+          try {
+              const parsedResponse = JSON.parse(part.text);
+              // Validate expected properties exist
+              if (parsedResponse.hint === undefined || parsedResponse.bugs === undefined || parsedResponse.optimization === undefined) {
+                   console.error("Parsed text JSON missing required fields:", parsedResponse);
+                   throw new Error("Parsed response missing required fields (hint, bugs, optimization).");
+              }
+              return {
+                  hint: parsedResponse.hint || "",
+                  bugs: parsedResponse.bugs || "",
+                  optimization: parsedResponse.optimization || ""
+              };
+          } catch (parseError) {
+              console.error("Failed to parse Gemini text response as JSON:", parseError, "Raw text:", part.text);
+              // Fallback: Return raw text in hint field if parsing fails
+              return {
+                  hint: `Error: Failed to parse API response. Raw text: ${part.text}`,
+                  bugs: "",
+                  optimization: ""
+              };
+          }
+      } else {
+           // This path should ideally not be needed if response_mime_type works
+           console.error("Unexpected response format: No 'text' field found in part.", part);
+           throw new Error("Unexpected response format from Gemini API (missing text field).");
+      }
+
+    } catch (parseError) {
+      console.error("Error processing Gemini response content:", parseError, "Raw result object:", result);
+      throw new Error(`API response processing error: ${parseError.message}`);
+    }
+  } catch (error) {
+    console.error("Error in getHintWithTestResults fetch/processing:", error);
+    // Return the standard error structure
+    return {
+      hint: `Error getting advanced hint: ${error.message}`,
       bugs: "",
       optimization: ""
     };
