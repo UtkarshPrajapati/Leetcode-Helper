@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
     setupEventListeners();
     checkApiConfig();
     initializeIconState();
+    updateGlider(); 
   } catch (error) {
     console.error('Error during popup initialization:', error);
     showErrorMessage('Failed to initialize the extension popup. Please try again.');
@@ -36,6 +37,7 @@ function setupEventListeners() {
         aboutTab.classList.remove('active');
         settingsContent.classList.add('active');
         aboutContent.classList.remove('active');
+        updateGlider();
       });
       
       aboutTab.addEventListener('click', function() {
@@ -43,6 +45,7 @@ function setupEventListeners() {
         settingsTab.classList.remove('active');
         aboutContent.classList.add('active');
         settingsContent.classList.remove('active');
+        updateGlider();
       });
     } else {
       console.error('Tab elements not found');
@@ -63,6 +66,20 @@ function setupEventListeners() {
     }
   } catch (error) {
     console.error('Error setting up event listeners:', error);
+  }
+}
+
+function updateGlider() {
+  try {
+    const activeTab = document.querySelector('.tab.active');
+    const glider = document.querySelector('.glider');
+    
+    if (activeTab && glider) {
+      glider.style.width = `${activeTab.offsetWidth}px`;
+      glider.style.transform = `translateX(${activeTab.offsetLeft}px)`;
+    }
+  } catch(error) {
+    console.error("Error updating glider position:", error);
   }
 }
 
