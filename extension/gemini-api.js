@@ -1,4 +1,4 @@
-const GEMINI_API_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-04-17:generateContent';
+const GEMINI_API_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent';
 
 let GEMINI_API_KEY = "";
 
@@ -252,7 +252,7 @@ async function getHintWithTestResults(code, problemTitle, problemDescription, te
   // **** CONSTRUCT THE NEW PROMPT ****
   const prompt = `
   You are a calm, helpful coding teacher guiding a student who is solving a LeetCode problem.
-  The student has run their code against LeetCode's test cases. Analyze their code *in conjunction with the test results*.
+  The student has run their code against LeetCode's public test cases. Analyze their code *in conjunction with the test results*.
 
   Problem: ${sanitizedTitle}
   Description: ${sanitizedDescription}
@@ -262,7 +262,7 @@ async function getHintWithTestResults(code, problemTitle, problemDescription, te
   ${sanitizedCode}
   \`\`\`
 
-  LeetCode Test Execution Summary:
+  LeetCode PublicTest Execution Summary:
   \`\`\`json
   ${testResultsString}
   \`\`\`
@@ -278,7 +278,7 @@ async function getHintWithTestResults(code, problemTitle, problemDescription, te
   🧩 Hint Rules:
   - Provide 2-3 numbered hints, starting each on a NEW LINE (e.g., "\\n• Hint 1: ..."). Use exactly this format including the newline.
   - Make hints progressive.
-  - If the code is correct according to tests (e.g., "Accepted" or all cases match), focus hints on understanding *why* it's correct or potential optimizations/alternative approaches.
+  - If the code is correct according to the public tests (e.g., "Accepted" or all cases match), focus hints on understanding *why* it's correct or potential optimizations/alternative approaches.
   - If tests fail or errors occur, tailor hints towards fixing the issues revealed by the test results.
 
   📋 Bugs & Failing Tests:

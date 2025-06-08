@@ -67,6 +67,7 @@
       border-radius: 8px;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       transition: all 0.3s ease;
+      min-height: 60px;
     }
     
     .status-icon {
@@ -424,15 +425,17 @@
       <button id="check-connection" class="btn" style="margin-bottom: 12px;">Check Connection</button>
       
       <h3 style="margin-top: 12px; margin-bottom: 4px;">API Key Configuration</h3>
-      <p id="api-key-instruction" style="margin-bottom: 8px;">
-          Enter your Gemini API key. Need one?
-          <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer">Get your key from Google AI Studio</a>.
-      </p>
+      <div style="min-height: 40px;">
+        <p id="api-key-instruction" style="display: none; margin-bottom: 8px;">
+            Enter your Gemini API key. Need one?
+            <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer">Get your key from Google AI Studio</a>.
+        </p>
 
-      <p id="change-key-instruction" style="display: none; margin-bottom: 8px;">
-          Your API key is configured. You can change it below if needed.
-          (<a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer" title="Opens Google AI Studio in a new tab">Get a new key</a>)
-      </p>
+        <p id="change-key-instruction" style="display: none; margin-bottom: 8px;">
+            Your API key is configured. You can change it below if needed.
+            (<a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer" title="Opens Google AI Studio in a new tab">Get a new key</a>)
+        </p>
+      </div>
       <form id="api-key-form">
         <div class="form-group" style="margin-bottom: 12px;">
           <label for="api-key-input" style="margin-bottom: 4px;">Gemini API Key <span id="change-key-label" style="color: var(--primary-color); font-size: 12px; display: none;">(Change Key)</span></label>

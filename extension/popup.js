@@ -1,9 +1,8 @@
 document.addEventListener('DOMContentLoaded', function() {
   try {
     setupEventListeners();
-    checkApiConfig();
-    initializeIconState();
-    updateGlider(); 
+    initializeUIFromCache();
+    updateGlider();
   } catch (error) {
     console.error('Error during popup initialization:', error);
     showErrorMessage('Failed to initialize the extension popup. Please try again.');
@@ -83,13 +82,70 @@ function updateGlider() {
   }
 }
 
-function checkApiConfig() {
-  try {
+function setUIForConnected() {
     const statusIcon = document.getElementById('status-icon');
     const statusText = document.getElementById('status-text');
     const apiKeyInstruction = document.getElementById('api-key-instruction');
     const changeKeyInstruction = document.getElementById('change-key-instruction');
     const changeKeyLabel = document.getElementById('change-key-label');
+
+    if (statusIcon) {
+      statusIcon.classList.remove('disconnected');
+      statusIcon.classList.add('connected');
+    }
+    if (statusText) {
+      statusText.textContent = 'Gemini API configured. You can change your key below if needed.';
+    }
+    try {
+      chrome.action.setIcon({ path: { "128": "images/enabled.png" } });
+      chrome.action.setBadgeText({ text: '' });
+    } catch (iconError) {
+      console.error('Error setting icon:', iconError);
+    }
+    if (apiKeyInstruction) apiKeyInstruction.style.display = 'none';
+    if (changeKeyInstruction) changeKeyInstruction.style.display = 'block';
+    if (changeKeyLabel) changeKeyLabel.style.display = 'inline';
+}
+
+function setUIForDisconnected() {
+    const statusIcon = document.getElementById('status-icon');
+    const statusText = document.getElementById('status-text');
+    const apiKeyInstruction = document.getElementById('api-key-instruction');
+    const changeKeyInstruction = document.getElementById('change-key-instruction');
+    const changeKeyLabel = document.getElementById('change-key-label');
+
+    if (statusIcon) {
+      statusIcon.classList.remove('connected');
+      statusIcon.classList.add('disconnected');
+    }
+    if (statusText) {
+      statusText.textContent = 'Gemini API key not configured';
+    }
+    try {
+      chrome.action.setIcon({ path: { "128": "images/disabled.png" } });
+      chrome.action.setBadgeText({ text: '' });
+    } catch (iconError) {
+      console.error('Error setting icon:', iconError);
+    }
+    if (apiKeyInstruction) apiKeyInstruction.style.display = 'block';
+    if (changeKeyInstruction) changeKeyInstruction.style.display = 'none';
+    if (changeKeyLabel) changeKeyLabel.style.display = 'none';
+}
+
+function initializeUIFromCache() {
+  chrome.storage.local.get(['apiKeyStatus'], function(result) {
+    if (result.apiKeyStatus === 'ok') {
+      setUIForConnected();
+    } else {
+      setUIForDisconnected();
+    }
+  });
+}
+
+function checkApiConfig() {
+  try {
+    const statusIcon = document.getElementById('status-icon');
+    const statusText = document.getElementById('status-text');
     
     if (!statusText) {
       console.error('Status text element not found');
@@ -97,55 +153,25 @@ function checkApiConfig() {
     }
     
     statusText.textContent = 'Checking Gemini API configuration...';
-    
-    checkApiStatus()
-      .then(data => {
+    if (statusIcon) {
+      statusIcon.classList.remove('connected', 'disconnected');
+    }
+
+    const minDisplayTime = new Promise(resolve => setTimeout(resolve, 500));
+    const apiCheck = checkApiStatus();
+
+    Promise.all([apiCheck, minDisplayTime])
+      .then(([data]) => {
         if (data.status === 'error') {
           throw new Error(data.message);
         }
-        
-        if (statusIcon) {
-          statusIcon.classList.remove('disconnected');
-          statusIcon.classList.add('connected');
-        }
-        
-        if (statusText) {
-          statusText.textContent = 'Gemini API configured. You can change your key below if needed.';
-        }
-
-        try {
-          chrome.action.setIcon({ path: { "128": "images/enabled.png" } });
-          chrome.action.setBadgeText({ text: '' });
-        } catch (iconError) {
-          console.error('Error setting icon:', iconError);
-        }
-        
-        if (apiKeyInstruction) apiKeyInstruction.style.display = 'none';
-        if (changeKeyInstruction) changeKeyInstruction.style.display = 'block';
-        if (changeKeyLabel) changeKeyLabel.style.display = 'inline';
+        setUIForConnected();
+        chrome.storage.local.set({ apiKeyStatus: 'ok' });
       })
       .catch(error => {
         console.error('Error checking API configuration:', error);
-        
-        if (statusIcon) {
-          statusIcon.classList.remove('connected');
-          statusIcon.classList.add('disconnected');
-        }
-        
-        if (statusText) {
-          statusText.textContent = 'Gemini API key not configured';
-        }
-        
-        try {
-          chrome.action.setIcon({ path: { "128": "images/disabled.png" } });
-          chrome.action.setBadgeText({ text: '' });
-        } catch (iconError) {
-          console.error('Error setting icon:', iconError);
-        }
-        
-        if (apiKeyInstruction) apiKeyInstruction.style.display = 'block';
-        if (changeKeyInstruction) changeKeyInstruction.style.display = 'none';
-        if (changeKeyLabel) changeKeyLabel.style.display = 'none';
+        setUIForDisconnected();
+        chrome.storage.local.set({ apiKeyStatus: 'error' });
       });
   } catch (error) {
     console.error('Error in checkApiConfig:', error);
@@ -172,7 +198,7 @@ function handleApiKeySubmit(event) {
       statusText.style.color = '#dc3545';
       setTimeout(() => {
         statusText.style.color = '';
-        statusText.textContent = 'Gemini API key not configured';
+        setUIForDisconnected();
       }, 3000);
       return;
     }
@@ -190,8 +216,8 @@ function handleApiKeySubmit(event) {
         statusText.style.color = '#dc3545';
         
         setTimeout(() => {
-          statusText.textContent = 'Gemini API key not configured';
           statusText.style.color = '';
+          setUIForDisconnected();
         }, 5000);
       });
   } catch (error) {
@@ -213,26 +239,5 @@ function showErrorMessage(message) {
     }
   } catch (error) {
     console.error('Error showing error message:', error);
-  }
-}
-
-// Initialize icon state based on API key configuration
-function initializeIconState() {
-  try {
-    checkApiStatus().then(data => {
-      try {
-        if (data.status === 'ok') {
-          chrome.action.setIcon({ path: { "128": "images/enabled.png" } });
-        } else {
-          chrome.action.setIcon({ path: { "128": "images/disabled.png" } });
-        }
-        // Clear any existing badge
-        chrome.action.setBadgeText({ text: '' });
-      } catch (error) {
-        console.error('Error setting initial icon state:', error);
-      }
-    });
-  } catch (error) {
-    console.error('Error in initializeIconState:', error);
   }
 }
