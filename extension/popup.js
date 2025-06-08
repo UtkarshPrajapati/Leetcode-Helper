@@ -25,6 +25,23 @@ function setupEventListeners() {
       console.error('API key form not found');
     }
 
+    const toggleApiKeyVisibilityBtn = document.getElementById('toggle-api-key-visibility');
+    if (toggleApiKeyVisibilityBtn) {
+        toggleApiKeyVisibilityBtn.addEventListener('click', function() {
+            const apiKeyInput = document.getElementById('api-key-input');
+            const icon = this.querySelector('i');
+            if (apiKeyInput.type === 'password') {
+                apiKeyInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                apiKeyInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+    }
+
     const settingsTab = document.getElementById('settings-tab');
     const aboutTab = document.getElementById('about-tab');
     const settingsContent = document.getElementById('settings-content');
