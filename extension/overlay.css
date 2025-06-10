@@ -99,20 +99,10 @@
   transform: translateY(1px);
 }
 
-/* Optional: Add to overlay.css if buttons need layout adjustment */
 .leetcode-helper-button.leetcode-helper-primary {
-  /* Ensure buttons don't get too small */
   min-width: 120px;
-  /* Allow shrinking but prefer equal width */
   flex-shrink: 1;
-  /* Adjust padding if needed */
-  /* padding: 10px 12px; */
 }
-
-/* Target the container div specifically if needed */
-/* .leetcode-helper-content > div[style*="display: flex"] { */
-  /* Add rules for the button container here if necessary */
-/* } */
 
 .leetcode-helper-hint-container {
   margin-top: 16px;
@@ -208,7 +198,6 @@
   }
 }
 
-/* Code formatting styles */
 .leetcode-helper-code {
   font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
   background-color: rgba(0, 0, 0, 0.3);

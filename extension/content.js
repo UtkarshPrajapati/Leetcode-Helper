@@ -203,7 +203,6 @@ async function getHint() {
     document.getElementById('leetcode-helper-loading').style.display = 'flex';
     document.getElementById('leetcode-helper-hint-container').style.display = 'none';
     
-    // Reset any existing content sections to ensure they're not collapsed
     document.querySelectorAll('.leetcode-helper-content-section').forEach(section => {
       section.classList.remove('collapsed');
     });
@@ -256,68 +255,53 @@ async function getHint() {
 async function getHintAdvanced() {
   const loadingElement = document.getElementById('leetcode-helper-loading');
   const hintContainer = document.getElementById('leetcode-helper-hint-container');
-  const hintElement = document.getElementById('leetcode-helper-hint'); // Target for error messages within the container
+  const hintElement = document.getElementById('leetcode-helper-hint');
 
   try {
-    // Ensure loading indicator covers potential error messages too
-    loadingElement.innerHTML = '<p>Getting your hint & running tests...</p><div style="margin-top: 15px;"></div><div class="leetcode-helper-spinner"></div>'; // Update loading text
-    loadingElement.style.display = 'flex'; // Show loading
-    hintContainer.style.display = 'none';  // Hide previous results
-    // Clear all parts of the hint container
+    loadingElement.innerHTML = '<p>Getting your hint & running tests...</p><div style="margin-top: 15px;"></div><div class="leetcode-helper-spinner"></div>';
+    loadingElement.style.display = 'flex';
+    hintContainer.style.display = 'none';
     hintElement.innerHTML = '';
     document.getElementById('leetcode-helper-bugs').innerHTML = '';
     document.getElementById('leetcode-helper-optimization').innerHTML = '';
 
 
-    // 1. Get Code
     const code = await getLeetCodeCode();
     if (!code) {
-      // Use displayErrorMessage for consistency
       displayErrorMessage("Could not extract code from the editor.");
-      return; // Stop execution
+      return;
     }
 
-    // 2. Run Tests using testing.js
     let testResults = null;
     try {
       console.log("Running LeetCode tests via testing.js...");
-      // Update loading text while tests run
-       loadingElement.querySelector('p').textContent = 'Running tests...';
-      testResults = await getLeetCodeTestSummaryJSON(); // Directly call the function from testing.js
+      loadingElement.querySelector('p').textContent = 'Running tests...';
+      testResults = await getLeetCodeTestSummaryJSON();
       console.log("Test Results Received:", testResults);
-       loadingElement.querySelector('p').textContent = 'Tests finished. Getting hint...'; // Update loading text again
+      loadingElement.querySelector('p').textContent = 'Tests finished. Getting hint...';
     } catch (testError) {
       console.error("Error running tests:", testError);
-      // Create a specific error structure to send to Gemini
       testResults = {
           consoleOutput: "Test Execution Error",
           errorDetails: { message: `Failed to execute LeetCode tests: ${testError.message}`, lastInput: null },
           testCases: []
       };
-      // Display a non-fatal warning in the UI before proceeding
       displayErrorMessage(`Warning: Could not automatically run tests (${testError.message}). Hints will be based on code only.`);
-      // We can choose to proceed without test results, the Gemini prompt handles this case.
-      // Reset loading text if we proceed
       loadingElement.querySelector('p').textContent = 'Getting hint...';
     }
 
-    // 3. Call NEW Gemini function with code AND test results
-    // Ensure getHintWithTestResults is available (loaded from gemini-api.js)
     if (typeof getHintWithTestResults !== 'function') {
          throw new Error("getHintWithTestResults function not found. Check script loading order.");
     }
     const data = await getHintWithTestResults(code, problemTitle, problemDescription, testResults);
 
-    // 4. Display results
-    updateHintContainer(data); // This function populates hint, bugs, optimization elements
-    hintContainer.style.display = 'block'; // Show the populated container
+    updateHintContainer(data);
+    hintContainer.style.display = 'block';
 
   } catch (error) {
     console.error("Error in getHintAdvanced:", error);
-    // Use the dedicated error display function
     displayErrorMessage(`Advanced Hint Error: ${error.message || "An unexpected error occurred."}`);
   } finally {
-    // 5. Hide loading indicator
     loadingElement.style.display = 'none';
   }
 }
@@ -388,7 +372,6 @@ function updateHintContainer(data) {
           `;
         }
         
-        // Add event listeners for section toggling with the right initial state
         document.querySelectorAll('.leetcode-helper-section-header').forEach(header => {
           header.addEventListener('click', function() {
             const targetId = this.getAttribute('data-target');
@@ -419,19 +402,14 @@ function formatTextWithCodeBlocks(text) {
     return '';
   }
   
-  // Replace bullet points for better styling
   text = text.replace(/•\s+/g, '<span class="leetcode-helper-bullet">•</span> ');
   
-  // Add paragraph breaks for better readability
   text = text.replace(/\n\n/g, '</p><p>');
   
-  // Style hint numbers (Hint 1, Hint 2, etc.)
   text = text.replace(/(Hint \d+:)/g, '<strong>$1</strong>');
   
-  // Format text surrounded by single asterisks as bold
   text = text.replace(/\*([^*]+)\*/g, '<strong>$1</strong>');
   
-  // Format code blocks
   text = text.replace(/```([\s\S]+?)```/g, function(match, code) {
     const langMatch = code.match(/^(\w+)\s+([\s\S]+)$/);
     if (langMatch) {
@@ -448,10 +426,8 @@ function formatTextWithCodeBlocks(text) {
     return `<pre class="leetcode-helper-code-block"><code>${code}</code></pre>`;
   });
   
-  // Format inline code
   text = text.replace(/`([^`]+)`/g, '<code class="leetcode-helper-code">$1</code>');
   
-  // Wrap in paragraph if not already
   if (!text.startsWith('<p>')) {
     text = '<p>' + text;
   }

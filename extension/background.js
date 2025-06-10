@@ -1,6 +1,4 @@
-// Initialize extension state when installed or updated
 chrome.runtime.onInstalled.addListener(function(details) {
-  // Check API key status and set the appropriate icon
   checkApiStatus()
     .then(data => {
       if (data.status === 'ok') {
@@ -8,20 +6,16 @@ chrome.runtime.onInstalled.addListener(function(details) {
       } else {
         chrome.action.setIcon({ path: { "128": "images/disabled.png" } });
       }
-      // Clear any existing badge
       chrome.action.setBadgeText({ text: '' });
     })
     .catch(error => {
       console.error('Error checking API status on install:', error);
-      // Set disabled icon on error
       chrome.action.setIcon({ path: { "128": "images/disabled.png" } });
       chrome.action.setBadgeText({ text: '' });
     });
 });
 
-// Add listener for Chrome startup
 chrome.runtime.onStartup.addListener(function() {
-  // Check API key status and set the appropriate icon
   checkApiStatus()
     .then(data => {
       if (data.status === 'ok') {
@@ -29,18 +23,15 @@ chrome.runtime.onStartup.addListener(function() {
       } else {
         chrome.action.setIcon({ path: { "128": "images/disabled.png" } });
       }
-      // Clear any existing badge
       chrome.action.setBadgeText({ text: '' });
     })
     .catch(error => {
       console.error('Error checking API status on startup:', error);
-      // Set disabled icon on error
       chrome.action.setIcon({ path: { "128": "images/disabled.png" } });
       chrome.action.setBadgeText({ text: '' });
     });
 });
 
-// Load the check function from gemini-api.js
 function checkApiStatus() {
   return new Promise((resolve, reject) => {
     try {

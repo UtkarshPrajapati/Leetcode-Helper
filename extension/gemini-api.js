@@ -11,7 +11,7 @@ function loadApiKey() {
       });
     } catch (error) {
       console.error("Error loading API key from storage:", error);
-      resolve(""); // Return empty string on error
+      resolve("");
     }
   });
 }
@@ -25,7 +25,7 @@ async function validateApiKey(apiKey) {
   
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
     
     const response = await fetch(apiUrl, {
       method: "GET",
@@ -79,7 +79,7 @@ async function getHintFromGemini(code, problemTitle, problemDescription) {
   // Sanitize inputs
   const sanitizedTitle = (problemTitle || "Untitled Problem").substring(0, 500);
   const sanitizedDescription = (problemDescription || "No description provided").substring(0, 1000);
-  const sanitizedCode = (code || "").substring(0, 10000); // Limit code length
+  const sanitizedCode = (code || "").substring(0, 10000);
   
   const prompt = `
   You are a calm, helpful coding teacher guiding a student who is solving a LeetCode problem.
@@ -219,7 +219,6 @@ async function getHintWithTestResults(code, problemTitle, problemDescription, te
   console.log("Preparing advanced hint request with test results:", testResultsJson);
 
   if (!await isApiKeyConfigured()) {
-    // Return the standard error structure expected by updateHintContainer
     return {
       hint: "Error: Gemini API key not configured. Please set your API key in the extension settings.",
       bugs: "",
@@ -230,14 +229,12 @@ async function getHintWithTestResults(code, problemTitle, problemDescription, te
   // Sanitize inputs (same as getHintFromGemini)
   const sanitizedTitle = (problemTitle || "Untitled Problem").substring(0, 500);
   const sanitizedDescription = (problemDescription || "No description provided").substring(0, 1000);
-  const sanitizedCode = (code || "").substring(0, 10000); // Limit code length
+  const sanitizedCode = (code || "").substring(0, 10000);
 
-  // Prepare test results string (stringify and potentially truncate)
   let testResultsString = "Test results were not available or failed to run.";
   try {
-    // Stringify prettily for the prompt, limit length to avoid exceeding token limits
     const fullString = JSON.stringify(testResultsJson, null, 2);
-    const maxLength = 5000; // Limit length sent in prompt
+    const maxLength = 5000;
     if (fullString.length > maxLength) {
         testResultsString = fullString.substring(0, maxLength) + "\n... (results truncated)";
         console.warn(`Test results JSON string truncated to ${maxLength} characters for Gemini prompt.`);
@@ -249,7 +246,6 @@ async function getHintWithTestResults(code, problemTitle, problemDescription, te
     testResultsString = "Error processing test results for prompt.";
   }
 
-  // **** CONSTRUCT THE NEW PROMPT ****
   const prompt = `
   You are a calm, helpful coding teacher guiding a student who is solving a LeetCode problem.
   The student has run their code against LeetCode's public test cases. Analyze their code *in conjunction with the test results*.
@@ -298,14 +294,12 @@ async function getHintWithTestResults(code, problemTitle, problemDescription, te
 
   Keep paragraphs short and scannable. Focus on the *link* between the code and the test outcomes. Ensure hints, bugs, and optimizations points start on new lines as specified.
   `;
-  // **** END OF NEW PROMPT ****
 
   try {
     const controller = new AbortController();
-    // Give potentially complex analysis more time
-    const timeoutId = setTimeout(() => controller.abort(), 45000); // 45 seconds timeout
+    const timeoutId = setTimeout(() => controller.abort(), 45000);
 
-    console.log("Sending advanced hint request to Gemini..."); // Log before fetch
+    console.log("Sending advanced hint request to Gemini...");
 
     const response = await fetch(
       `${GEMINI_API_ENDPOINT}?key=${GEMINI_API_KEY}`,
@@ -316,20 +310,20 @@ async function getHintWithTestResults(code, problemTitle, problemDescription, te
         },
         body: JSON.stringify({
           contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { // Use the defined schema
+          generationConfig: {
             temperature: 0.2,
             response_mime_type: "application/json",
             response_schema: {
               type: "OBJECT",
               properties: {
                 hint: { type: "STRING" },
-                bugs: { type: "STRING" },        // Schema property name
-                optimization: { type: "STRING" } // Schema property name
+                bugs: { type: "STRING" },
+                optimization: { type: "STRING" }
               },
-              required: ["hint", "bugs", "optimization"] // Make them required
+              required: ["hint", "bugs", "optimization"]
             },
              thinkingConfig: {
-                 thinkingBudget: 1200 // Slightly higher budget for more complex analysis
+                 thinkingBudget: 1200
              }
           }
         }),
@@ -340,8 +334,8 @@ async function getHintWithTestResults(code, problemTitle, problemDescription, te
     clearTimeout(timeoutId);
 
     if (!response.ok) {
-        let errorBodyText = await response.text(); // Read body for details
-        console.error(`Gemini API Error Response (${response.status}):`, errorBodyText); // Log the raw error body
+        let errorBodyText = await response.text();
+        console.error(`Gemini API Error Response (${response.status}):`, errorBodyText);
         let message = `Network error or API issue. Status: ${response.status}. Check console for details.`;
         if (response.status === 400) {
           message = "API key error: The provided API key is invalid, quota issue, or the request format is incorrect. Check console.";
@@ -350,21 +344,19 @@ async function getHintWithTestResults(code, problemTitle, problemDescription, te
         } else if (response.status >= 500) {
             message = `Gemini API server error (${response.status}). Please try again later. Check console.`;
         }
-        // Try to extract a message from common error formats
         try {
             const errorJson = JSON.parse(errorBodyText);
             if (errorJson?.error?.message) {
                 message += ` Server Message: ${errorJson.error.message}`;
             }
-        } catch(e) { /* Body wasn't JSON */ }
+        } catch(e) { }
 
         throw new Error(message);
     }
 
     const result = await response.json();
-    console.log("Received Gemini response (Advanced Hint):", result); // Log successful response
+    console.log("Received Gemini response (Advanced Hint):", result);
 
-    // Parse the result using the defined schema structure
     try {
       if (!result.candidates || !result.candidates.length) {
         throw new Error("Empty response structure from Gemini API");
@@ -377,13 +369,10 @@ async function getHintWithTestResults(code, problemTitle, problemDescription, te
 
       const part = content.parts[0];
 
-      // Gemini should ideally return JSON directly because of response_mime_type
       if (part.text) {
-          // Attempt to parse if it's text, but this is less ideal
           console.warn("Gemini returned text instead of direct JSON, attempting parse.");
           try {
               const parsedResponse = JSON.parse(part.text);
-              // Validate expected properties exist
               if (parsedResponse.hint === undefined || parsedResponse.bugs === undefined || parsedResponse.optimization === undefined) {
                    console.error("Parsed text JSON missing required fields:", parsedResponse);
                    throw new Error("Parsed response missing required fields (hint, bugs, optimization).");
@@ -395,7 +384,6 @@ async function getHintWithTestResults(code, problemTitle, problemDescription, te
               };
           } catch (parseError) {
               console.error("Failed to parse Gemini text response as JSON:", parseError, "Raw text:", part.text);
-              // Fallback: Return raw text in hint field if parsing fails
               return {
                   hint: `Error: Failed to parse API response. Raw text: ${part.text}`,
                   bugs: "",
@@ -403,7 +391,6 @@ async function getHintWithTestResults(code, problemTitle, problemDescription, te
               };
           }
       } else {
-           // This path should ideally not be needed if response_mime_type works
            console.error("Unexpected response format: No 'text' field found in part.", part);
            throw new Error("Unexpected response format from Gemini API (missing text field).");
       }
@@ -414,7 +401,6 @@ async function getHintWithTestResults(code, problemTitle, problemDescription, te
     }
   } catch (error) {
     console.error("Error in getHintWithTestResults fetch/processing:", error);
-    // Return the standard error structure
     return {
       hint: `Error getting advanced hint: ${error.message}`,
       bugs: "",
