@@ -34,7 +34,9 @@ Configure your Gemini API key easily through the extension popup.
 
 Check out the full features in this demo video.
 
-[Watch Demo Video](assets/demo_video.mp4)
+https://github.com/user-attachments/assets/0fa0a7a4-ec65-4693-8704-8b8c7336823a
+
+
 
 ## 🛠️ Setup Instructions
 
