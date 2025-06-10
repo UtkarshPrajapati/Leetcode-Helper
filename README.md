@@ -18,6 +18,24 @@ A Chrome extension that enhances your LeetCode experience by providing personali
 - 🔒 Direct Gemini API integration (no backend server required)
 - Your API key and code/results are sent directly to Google
 
+## 📸 Screenshots & Demo
+
+Here's a glimpse of the extension in action.
+
+### Configuration Popup
+
+Configure your Gemini API key easily through the extension popup.
+
+| Settings Page | About Page |
+| :---: | :---: |
+| ![Settings Page](assets/popup_settings.png) | ![About Page](assets/popup_about.png) |
+
+### Demo Video
+
+Check out the full features in this demo video.
+
+[Watch Demo Video](assets/demo_video.mp4)
+
 ## 🛠️ Setup Instructions
 
 1. **Get a Gemini API Key** 🔑
