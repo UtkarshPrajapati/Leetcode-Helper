@@ -26,9 +26,13 @@ Here's a glimpse of the extension in action.
 
 Configure your Gemini API key easily through the extension popup.
 
+<div align="center">
+
 | Settings Page | About Page |
 | :---: | :---: |
 | [<img src="assets/popup_settings.png" width="250"/>](assets/popup_settings.png) | [<img src="assets/popup_about.png" width="250"/>](assets/popup_about.png) |
+
+</div>
 
 ### Demo Video
 
