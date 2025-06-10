@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
     setupEventListeners();
     initializeUIFromCache();
     updateGlider();
+    displayVersion();
   } catch (error) {
     console.error('Error during popup initialization:', error);
     showErrorMessage('Failed to initialize the extension popup. Please try again.');
@@ -193,6 +194,18 @@ function checkApiConfig() {
   } catch (error) {
     console.error('Error in checkApiConfig:', error);
     showErrorMessage('Failed to check API configuration');
+  }
+}
+
+function displayVersion() {
+  try {
+    const manifest = chrome.runtime.getManifest();
+    const versionDisplay = document.getElementById('version-display');
+    if (versionDisplay) {
+      versionDisplay.textContent = `Version: ${manifest.version}`;
+    }
+  } catch (error) {
+    console.error('Error displaying version:', error);
   }
 }
 
