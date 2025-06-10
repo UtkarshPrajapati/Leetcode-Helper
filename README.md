@@ -58,8 +58,8 @@ A Chrome extension that enhances your LeetCode experience by providing personali
 ## 🔒 Privacy
 
 - Your code, the problem title/description, and (for advanced hints) the results of running your code against LeetCode's test cases are sent directly to Google's Gemini API via HTTPS
-- No data is stored on any third-party servers other than Google's infrastructure processing the API request
-- Your API key is stored securely in your local Chrome storage (`chrome.storage.sync`) and is only used for making authenticated API calls directly from your browser to Google
+- No data is stored on any third-party servers.
+- Your API key is stored in `chrome.storage.sync`, allowing it to sync across your logged-in browsers. A non-sensitive status flag ('ok' or 'error') is kept in `chrome.storage.local` for quick UI updates on the specific machine. Both are used only for making authenticated API calls directly from your browser to Google.
 
 ## ⚠️ Limitations
 
