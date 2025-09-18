@@ -84,9 +84,9 @@ function createOverlay() {
         <i class="fa-solid fa-puzzle-piece" style="margin-right: 8px;"></i>
         <h3>LeetCode Helper</h3>
       </div>
-      <button id="leetcode-helper-toggle" class="leetcode-helper-button"><i class="fa-solid fa-minus"></i></button>
+      <button id="leetcode-helper-toggle" class="leetcode-helper-button"><i class="fa-solid fa-plus"></i></button>
     </div>
-    <div class="leetcode-helper-content" id="leetcode-helper-content">
+    <div class="leetcode-helper-content collapsed" id="leetcode-helper-content">
       <p><i class="fa-solid fa-lightbulb" style="color: #f1c40f; margin-right: 5px;"></i> Need help with your solution? Click a button below!</p>
       <div style="display: flex; gap: 10px; margin-top: 15px;">
         <button id="leetcode-helper-get-hint" class="leetcode-helper-button leetcode-helper-primary" style="flex: 1;">
